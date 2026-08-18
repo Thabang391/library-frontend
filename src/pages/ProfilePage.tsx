@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 
 // Ensure your .env variables are prefixed with VITE__
 const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
@@ -259,6 +260,21 @@ export default function ProfilePage() {
                   className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:bg-slate-800 focus:ring-2 focus:ring-indigo-400 focus:border-transparent rounded-xl transition-all py-3"
                 />
                 <p className="text-xs text-slate-500">You can also edit the image URL manually if needed.</p>
+              </div>
+
+              {/* Role Display */}
+              <div className="space-y-2">
+                <Label className="text-slate-300 font-medium">Role</Label>
+                <div className="bg-slate-800/50 border border-slate-700 rounded-xl py-3 px-4 flex items-center">
+                  <Badge variant="secondary" className={
+                    user.role === 'admin' ? 'bg-red-500/20 text-red-300' :
+                    user.role === 'librarian' ? 'bg-blue-500/20 text-blue-300' :
+                    'bg-slate-500/20 text-slate-300'
+                  }>
+                    {user.role}
+                  </Badge>
+                </div>
+                <p className="text-xs text-slate-500">Your role determines what actions you can perform.</p>
               </div>
 
               <div className="pt-4 flex flex-col sm:flex-row gap-3 justify-end">
