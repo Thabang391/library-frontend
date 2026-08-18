@@ -11,6 +11,7 @@ import BooksPage from '@/pages/BooksPage';
 import AuthorsPage from '@/pages/AuthorsPage';
 import BookFormPage from '@/pages/BookFormPage';
 import AuthorFormPage from '@/pages/AuthorFormPage';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   return (
@@ -71,6 +72,14 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+  path="/profile"
+  element={
+    <ProtectedRoute>
+      <ProfilePage />
+    </ProtectedRoute>
+  }
+/>
             </Routes>
           </main>
         </div>

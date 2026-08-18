@@ -13,6 +13,7 @@ interface Book {
   id: number;
   title: string;
   author: string;
+  cover_image_url?: string;
 }
 
 export default function BooksPage() {
@@ -34,7 +35,7 @@ export default function BooksPage() {
       if (sortBy) params.sortBy = sortBy;
       if (order) params.order = order;
       if (authorFilter.trim()) params.author = authorFilter.trim();
-      
+
       const res = await API.get('/books', { params });
       setBooks(res.data.data);
       setTotal(res.data.total);
@@ -64,19 +65,18 @@ export default function BooksPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-800 text-white font-sans antialiased pb-16">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-12">
-        
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-300 to-violet-300 bg-clip-text text-transparent">Books</h1>
             <p className="text-slate-300 mt-1">Manage your library's book collection</p>
           </div>
-          <Link 
-  to="/books/new" 
-  className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white shadow-lg shadow-indigo-500/20 rounded-xl px-6 py-3 transition-all duration-300 font-medium text-sm"
->
-  <Plus className="w-5 h-5" />
-  <span>Create New Book</span>
-</Link>
+          <Link
+            to="/books/new"
+            className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white shadow-lg shadow-indigo-500/20 rounded-xl px-6 py-3 transition-all duration-300 font-medium text-sm"
+          >
+            <Plus className="w-5 h-5" />
+            <span>Create New Book</span>
+          </Link>
         </div>
 
         <Card className="mb-6 border-0 shadow-lg bg-white/5 backdrop-blur-xl rounded-2xl">
@@ -91,7 +91,7 @@ export default function BooksPage() {
                 className="pl-9 bg-white/10 border-white/20 text-white placeholder:text-slate-400 focus:bg-white/20 focus:ring-2 focus:ring-indigo-400 focus:border-transparent rounded-xl transition-all"
               />
             </div>
-            
+
             <div className="flex items-center gap-2 flex-wrap">
               <Select value={sortBy || 'all'} onValueChange={(value) => { setPage(1); setSortBy(value === 'all' ? '' : value); }}>
                 <SelectTrigger className="w-[140px] bg-white/10 border-white/20 text-slate-200 focus:ring-indigo-400 rounded-xl">
@@ -154,7 +154,7 @@ export default function BooksPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="border-b border-white/10 hover:bg-white/5">
-                    <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">ID</TableHead>
+                    <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">Cover</TableHead>
                     <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">Title</TableHead>
                     <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">Author</TableHead>
                     <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Actions</TableHead>
@@ -163,7 +163,13 @@ export default function BooksPage() {
                 <TableBody>
                   {books.map((book) => (
                     <TableRow key={book.id} className="border-b border-white/5 transition-all hover:bg-white/5 group">
-                      <TableCell className="px-6 py-4 text-sm font-mono text-slate-400">#{book.id}</TableCell>
+                      <TableCell className="px-6 py-4">
+                        {book.cover_image_url ? (
+                          <img src={book.cover_image_url} alt={book.title} className="w-12 h-16 object-cover rounded-md border border-white/10" />
+                        ) : (
+                          <div className="w-12 h-16 bg-white/5 rounded-md border border-white/5 flex items-center justify-center text-slate-500 text-xs">No cover</div>
+                        )}
+                      </TableCell>
                       <TableCell className="px-6 py-4 text-sm font-semibold text-white">{book.title}</TableCell>
                       <TableCell className="px-6 py-4 text-sm text-slate-300">{book.author}</TableCell>
                       <TableCell className="px-6 py-4 text-right space-x-5">
@@ -184,17 +190,17 @@ export default function BooksPage() {
               Page <span className="font-semibold text-white">{page}</span> of <span className="font-semibold text-white">{totalPages}</span>
             </div>
             <div className="flex gap-3">
-              <Button 
-                variant="outline" 
-                disabled={page <= 1} 
+              <Button
+                variant="outline"
+                disabled={page <= 1}
                 onClick={() => setPage(page - 1)}
                 className="border-white/20 text-slate-200 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl transition-all"
               >
                 Previous
               </Button>
-              <Button 
-                variant="outline" 
-                disabled={page >= totalPages} 
+              <Button
+                variant="outline"
+                disabled={page >= totalPages}
                 onClick={() => setPage(page + 1)}
                 className="border-white/20 text-slate-200 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl transition-all"
               >

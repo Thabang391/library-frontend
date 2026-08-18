@@ -21,6 +21,7 @@ export default function BookFormPage() {
 
   const [title, setTitle] = useState<string>('');
   const [authorId, setAuthorId] = useState<string>('');
+  const [coverImageUrl, setCoverImageUrl] = useState<string>('');
   const [authors, setAuthors] = useState<Author[]>([]);
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
@@ -45,6 +46,7 @@ export default function BookFormPage() {
           const res = await API.get(`/books/${id}`);
           setTitle(res.data.title);
           setAuthorId(String(res.data.author_id));
+          setCoverImageUrl(res.data.cover_image_url || '');
         } catch (err: any) {
           setError(err.response?.data?.message || 'Failed to fetch book');
         } finally {
@@ -67,7 +69,9 @@ export default function BookFormPage() {
     }
 
     try {
-      const payload = { title: title.trim(), authorId: Number(authorId) };
+      const payload: any = { title: title.trim(), authorId: Number(authorId) };
+      if (coverImageUrl.trim()) payload.coverImageUrl = coverImageUrl.trim();
+
       if (isEdit) {
         await API.patch(`/books/${id}`, payload);
       } else {
@@ -84,15 +88,14 @@ export default function BookFormPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-800 text-white font-sans antialiased">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        
         <div className="mb-6">
-          <Link 
-  to="/books" 
-  className="inline-flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-white/10 -ml-2 rounded-xl px-3 py-2 text-sm font-medium transition-all"
->
-  <ArrowLeft className="w-5 h-5" />
-  <span>Back to Books</span>
-</Link>
+          <Link
+            to="/books"
+            className="inline-flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-white/10 -ml-2 rounded-xl px-3 py-2 text-sm font-medium transition-all"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span>Back to Books</span>
+          </Link>
         </div>
 
         <Card className="border-0 shadow-2xl bg-white/5 backdrop-blur-xl rounded-3xl overflow-hidden">
@@ -127,9 +130,9 @@ export default function BookFormPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="author" className="text-slate-200 font-medium">Author</Label>
-                  <Select 
-                    value={authorId} 
-                    onValueChange={(value) => setAuthorId(value)} 
+                  <Select
+                    value={authorId}
+                    onValueChange={(value) => setAuthorId(value)}
                     required
                   >
                     <SelectTrigger id="author" className="bg-white/10 border-white/20 text-white focus:ring-2 focus:ring-indigo-400 focus:border-transparent rounded-xl transition-all">
@@ -145,6 +148,23 @@ export default function BookFormPage() {
                   </Select>
                 </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="cover" className="text-slate-200 font-medium">Cover Image URL</Label>
+                  <Input
+                    id="cover"
+                    type="url"
+                    value={coverImageUrl}
+                    onChange={(e) => setCoverImageUrl(e.target.value)}
+                    placeholder="https://example.com/cover.jpg"
+                    className="bg-white/10 border-white/20 text-white placeholder:text-slate-400 focus:bg-white/20 focus:ring-2 focus:ring-indigo-400 focus:border-transparent rounded-xl transition-all py-3"
+                  />
+                  {coverImageUrl && (
+                    <div className="mt-2 rounded-lg overflow-hidden border border-white/10 max-w-[100px]">
+                      <img src={coverImageUrl} alt="Cover preview" className="w-full h-auto" />
+                    </div>
+                  )}
+                </div>
+
                 {error && (
                   <Alert variant="destructive" className="bg-red-500/20 border-red-400/30 text-red-200 backdrop-blur-sm rounded-xl">
                     <AlertDescription>{error}</AlertDescription>
@@ -156,16 +176,16 @@ export default function BookFormPage() {
 
           {!initialLoading && (
             <CardFooter className="flex items-center justify-end gap-3 px-8 py-4 border-t border-white/10 bg-white/5">
-              <Button 
-                type="button" 
-                onClick={() => navigate('/books')} 
+              <Button
+                type="button"
+                onClick={() => navigate('/books')}
                 variant="outline"
                 className="border-white/20 text-slate-200 hover:bg-white/10 rounded-xl transition-all"
               >
                 Cancel
               </Button>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 onClick={handleSubmit}
                 disabled={loading}
                 className="bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white shadow-lg shadow-indigo-500/20 rounded-xl px-6 py-3 h-auto transition-all duration-300"

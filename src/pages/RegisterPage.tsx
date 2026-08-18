@@ -10,9 +10,10 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 export default function RegisterPage() {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [username, setUsername] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  
+
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -21,7 +22,7 @@ export default function RegisterPage() {
     setError('');
     setLoading(true);
     try {
-      await register(email, password);
+      await register(email, password, username);
       alert('Registration successful! Please login.');
       navigate('/login');
     } catch (err: any) {
@@ -44,15 +45,33 @@ export default function RegisterPage() {
           <CardTitle className="text-3xl font-bold text-white">Create an account</CardTitle>
           <CardDescription className="text-slate-300">Enter your details to start building your library</CardDescription>
         </CardHeader>
-        
+
         <CardContent className="relative">
           {error && (
             <Alert variant="destructive" className="mb-6 bg-red-500/20 border-red-400/30 text-red-200 backdrop-blur-sm rounded-xl">
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-          
+
           <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="username" className="text-slate-200 font-medium">Username</Label>
+              <div className="relative">
+                <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder="Your username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                  className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-slate-400 focus:bg-white/20 focus:ring-2 focus:ring-emerald-400 focus:border-transparent rounded-xl transition-all"
+                />
+              </div>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="email" className="text-slate-200 font-medium">Email</Label>
               <div className="relative">
@@ -70,7 +89,7 @@ export default function RegisterPage() {
                 />
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="password" className="text-slate-200 font-medium">Password</Label>
               <div className="relative">
@@ -90,8 +109,8 @@ export default function RegisterPage() {
               <p className="text-xs text-slate-400 mt-1">Minimum 6 characters.</p>
             </div>
 
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={loading}
               className="w-full h-12 bg-gradient-to-r from-slate-700 to-slate-900 hover:from-slate-800 hover:to-black text-white font-semibold rounded-xl shadow-lg shadow-slate-900/30 transition-all duration-300 disabled:opacity-50"
             >
