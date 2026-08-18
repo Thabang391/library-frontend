@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Search, X, Filter, Star } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
+import AddToListPopover from '@/components/AddToListPopover';
 
 interface Book {
   id: number;
@@ -407,6 +408,9 @@ export default function BooksPage() {
                     <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">Year</TableHead>
                     <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">Rating</TableHead>
                     <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</TableHead>
+                    {user && (
+                      <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">List</TableHead>
+                    )}
                     {canModify && (
                       <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Actions</TableHead>
                     )}
@@ -447,6 +451,18 @@ export default function BooksPage() {
                           <Badge variant="secondary" className="bg-green-500/20 text-green-300">Available</Badge>
                         )}
                       </TableCell>
+                      {user && (
+                        <TableCell className="px-6 py-4">
+                          <AddToListPopover
+                            bookId={book.id}
+                            trigger={
+                              <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
+                                <Plus className="w-4 h-4" />
+                              </Button>
+                            }
+                          />
+                        </TableCell>
+                      )}
                       {canModify && (
                         <TableCell className="px-6 py-4 text-right space-x-5">
                           <Link to={`/books/${book.id}/edit`} className="font-medium text-indigo-300 hover:text-indigo-100 transition-colors">Edit</Link>

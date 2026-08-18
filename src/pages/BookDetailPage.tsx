@@ -6,10 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Star, ArrowLeft, Edit, Trash2 } from 'lucide-react';
+import { Star, ArrowLeft, Edit, Trash2, Plus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import AddToListPopover from '@/components/AddToListPopover';
 
 interface Book {
   id: number;
@@ -200,20 +201,37 @@ export default function BookDetailPage() {
                   {book.is_borrowed ? 'Borrowed' : 'Available'}
                 </Badge>
               </div>
-              {user && !book.is_borrowed && (
-                <Button
-                  onClick={() => {
-                    API.post('/loans', { bookId: book.id })
-                      .then(() => {
-                        alert('Book borrowed successfully!');
-                        fetchBook();
-                      })
-                      .catch((err) => alert(err.response?.data?.message || 'Failed to borrow'));
-                  }}
-                  className="bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white shadow-lg shadow-indigo-500/20 rounded-xl px-6 py-2 transition-all"
-                >
-                  Borrow this Book
-                </Button>
+
+              {user && (
+                <div className="flex flex-wrap gap-2">
+                  {!book.is_borrowed && (
+                    <Button
+                      onClick={() => {
+                        API.post('/loans', { bookId: book.id })
+                          .then(() => {
+                            alert('Book borrowed successfully!');
+                            fetchBook();
+                          })
+                          .catch((err) => alert(err.response?.data?.message || 'Failed to borrow'));
+                      }}
+                      className="bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white shadow-lg shadow-indigo-500/20 rounded-xl px-6 py-2 transition-all"
+                    >
+                      Borrow this Book
+                    </Button>
+                  )}
+                  <AddToListPopover
+                    bookId={book.id}
+                    trigger={
+                      <Button
+                        variant="outline"
+                        className="border-white/20 text-slate-200 hover:bg-white/10 rounded-xl px-6 py-2"
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add to List
+                      </Button>
+                    }
+                  />
+                </div>
               )}
             </div>
           </CardContent>

@@ -107,6 +107,22 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+  path="/lists"
+  element={
+    <ProtectedRoute>
+      <ListsPage />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/lists/:id"
+  element={
+    <ProtectedRoute>
+      <ListDetailPage />
+    </ProtectedRoute>
+  }
+/>
             </Routes>
           </main>
         </div>
