@@ -50,6 +50,7 @@ export default function Navbar() {
                 {user.role === 'admin' && (
                   <NavLink to="/admin" className={getDesktopLinkClass}>Admin</NavLink>
                 )}
+                <NavLink to="/loans" className={getDesktopLinkClass}>My Loans</NavLink>
                 <NavLink to="/profile" className={getDesktopLinkClass}>Profile</NavLink>
               </>
             )}
@@ -134,6 +135,7 @@ export default function Navbar() {
                 {user.role === 'admin' && (
                   <NavLink to="/admin" className={getMobileLinkClass} onClick={() => setMobileOpen(false)}>Admin</NavLink>
                 )}
+                <NavLink to="/loans" className={getMobileLinkClass} onClick={() => setMobileOpen(false)}>My Loans</NavLink>
                 <NavLink to="/profile" className={getMobileLinkClass} onClick={() => setMobileOpen(false)}>Profile</NavLink>
                 <button
                   onClick={handleLogout}

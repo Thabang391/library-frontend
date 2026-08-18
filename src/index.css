@@ -24,7 +24,7 @@
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
-  /* NEW FONT STACK – Futuristic Archive */
+ /* Font stack – using Michroma for headings, Space Grotesk for body */
   --sans: 'Space Grotesk', system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: 'Michroma', system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: 'Space Grotesk', ui-monospace, Consolas, monospace; /* optional */

@@ -13,6 +13,7 @@ import BookFormPage from '@/pages/BookFormPage';
 import AuthorFormPage from '@/pages/AuthorFormPage';
 import ProfilePage from './pages/ProfilePage';
 import AdminPage from './pages/AdminPage';
+import LoansPage from './pages/LoansPage';
 
 function App() {
   return (
@@ -89,6 +90,14 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+  path="/loans"
+  element={
+    <ProtectedRoute>
+      <LoansPage />
+    </ProtectedRoute>
+  }
+/>
             </Routes>
           </main>
         </div>
