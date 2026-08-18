@@ -12,6 +12,7 @@ import AuthorsPage from '@/pages/AuthorsPage';
 import BookFormPage from '@/pages/BookFormPage';
 import AuthorFormPage from '@/pages/AuthorFormPage';
 import ProfilePage from './pages/ProfilePage';
+import AdminPage from './pages/AdminPage';
 
 function App() {
   return (
@@ -80,6 +81,14 @@ function App() {
     </ProtectedRoute>
   }
 />
+<Route
+                path="/admin"
+                element={
+                  <ProtectedRoute allowedRoles={['admin']}>
+                    <AdminPage />
+                  </ProtectedRoute>
+                }
+              />
             </Routes>
           </main>
         </div>

@@ -47,6 +47,9 @@ export default function Navbar() {
               <>
                 <NavLink to="/books" className={getDesktopLinkClass}>Books</NavLink>
                 <NavLink to="/authors" className={getDesktopLinkClass}>Authors</NavLink>
+                {user.role === 'admin' && (
+                  <NavLink to="/admin" className={getDesktopLinkClass}>Admin</NavLink>
+                )}
                 <NavLink to="/profile" className={getDesktopLinkClass}>Profile</NavLink>
               </>
             )}
@@ -65,6 +68,9 @@ export default function Navbar() {
                     </div>
                   )}
                   <span className="text-sm font-medium text-slate-200">{user.username || user.email}</span>
+                  <span className="text-xs text-slate-400 bg-white/10 px-2 py-0.5 rounded-full">
+                    {user.role}
+                  </span>
                 </div>
                 <button
                   onClick={handleLogout}
@@ -85,7 +91,7 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile menu button (unchanged) */}
+          {/* Mobile menu button */}
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
@@ -103,7 +109,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu (unchanged except added Profile link) */}
+      {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden border-t border-white/10 bg-white/10 backdrop-blur-xl">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
@@ -120,10 +126,14 @@ export default function Navbar() {
                   <div className="flex flex-col">
                     <span className="text-xs text-slate-400">Signed in as</span>
                     <span className="text-sm font-semibold text-white truncate">{user.username || user.email}</span>
+                    <span className="text-xs text-slate-400">{user.role}</span>
                   </div>
                 </div>
                 <NavLink to="/books" className={getMobileLinkClass} onClick={() => setMobileOpen(false)}>Books</NavLink>
                 <NavLink to="/authors" className={getMobileLinkClass} onClick={() => setMobileOpen(false)}>Authors</NavLink>
+                {user.role === 'admin' && (
+                  <NavLink to="/admin" className={getMobileLinkClass} onClick={() => setMobileOpen(false)}>Admin</NavLink>
+                )}
                 <NavLink to="/profile" className={getMobileLinkClass} onClick={() => setMobileOpen(false)}>Profile</NavLink>
                 <button
                   onClick={handleLogout}

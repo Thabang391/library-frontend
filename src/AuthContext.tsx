@@ -6,6 +6,7 @@ interface User {
   email: string;
   username: string;
   avatar_url?: string;
+  role: 'admin' | 'librarian' | 'member';
 }
 
 interface AuthContextType {
@@ -45,7 +46,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(res.data);
   };
 
-  // On mount, check for token and fetch user
   React.useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
