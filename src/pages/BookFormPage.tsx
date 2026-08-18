@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import API from '@/api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -14,6 +14,9 @@ interface Author {
   name: string;
 }
 
+const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
 export default function BookFormPage() {
   const { id } = useParams<{ id: string }>();
   const isEdit = Boolean(id);
@@ -26,6 +29,8 @@ export default function BookFormPage() {
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [initialLoading, setInitialLoading] = useState<boolean>(isEdit);
+  const [uploading, setUploading] = useState<boolean>(false);
+  const coverInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const fetchAuthors = async () => {
@@ -56,6 +61,35 @@ export default function BookFormPage() {
       fetchBook();
     }
   }, [id, isEdit]);
+
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setError('');
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+    try {
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+        { method: 'POST', body: formData }
+      );
+      const data = await res.json();
+      if (data.secure_url) {
+        setCoverImageUrl(data.secure_url);
+      } else {
+        setError('Upload failed: ' + (data.error?.message || 'Unknown error'));
+      }
+    } catch (err) {
+      setError('Upload error');
+    } finally {
+      setUploading(false);
+      if (coverInputRef.current) coverInputRef.current.value = '';
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -149,15 +183,33 @@ export default function BookFormPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="cover" className="text-slate-200 font-medium">Cover Image URL</Label>
-                  <Input
-                    id="cover"
-                    type="url"
-                    value={coverImageUrl}
-                    onChange={(e) => setCoverImageUrl(e.target.value)}
-                    placeholder="https://example.com/cover.jpg"
-                    className="bg-white/10 border-white/20 text-white placeholder:text-slate-400 focus:bg-white/20 focus:ring-2 focus:ring-indigo-400 focus:border-transparent rounded-xl transition-all py-3"
-                  />
+                  <Label htmlFor="cover" className="text-slate-200 font-medium">Cover Image</Label>
+                  <div className="flex items-center gap-3">
+                    <Input
+                      id="cover"
+                      type="url"
+                      value={coverImageUrl}
+                      onChange={(e) => setCoverImageUrl(e.target.value)}
+                      placeholder="https://example.com/cover.jpg"
+                      className="bg-white/10 border-white/20 text-white placeholder:text-slate-400 focus:bg-white/20 focus:ring-2 focus:ring-indigo-400 focus:border-transparent rounded-xl transition-all py-3 flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => coverInputRef.current?.click()}
+                      disabled={uploading}
+                      className="border-white/20 text-slate-200 hover:bg-white/10 rounded-xl transition-all whitespace-nowrap"
+                    >
+                      {uploading ? 'Uploading...' : 'Upload Cover'}
+                    </Button>
+                    <input
+                      type="file"
+                      ref={coverInputRef}
+                      onChange={handleCoverUpload}
+                      accept="image/*"
+                      className="hidden"
+                    />
+                  </div>
                   {coverImageUrl && (
                     <div className="mt-2 rounded-lg overflow-hidden border border-white/10 max-w-[100px]">
                       <img src={coverImageUrl} alt="Cover preview" className="w-full h-auto" />
@@ -186,8 +238,11 @@ export default function BookFormPage() {
               </Button>
               <Button
                 type="submit"
-                onClick={handleSubmit}
-                disabled={loading}
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.querySelector('form')?.requestSubmit();
+                }}
+                disabled={loading || uploading}
                 className="bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white shadow-lg shadow-indigo-500/20 rounded-xl px-6 py-3 h-auto transition-all duration-300"
               >
                 {loading ? (

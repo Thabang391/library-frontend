@@ -1,10 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/AuthContext';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+
+const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET; // should be "my_unsigned_preset"
 
 export default function ProfilePage() {
   const { user, updateProfile } = useAuth();
@@ -13,6 +16,8 @@ export default function ProfilePage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (user) {
@@ -20,6 +25,36 @@ export default function ProfilePage() {
       setAvatarUrl(user.avatar_url || '');
     }
   }, [user]);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setError('');
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+    try {
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+        { method: 'POST', body: formData }
+      );
+      const data = await res.json();
+      if (data.secure_url) {
+        setAvatarUrl(data.secure_url);
+        setSuccess('Avatar uploaded successfully');
+      } else {
+        setError('Upload failed: ' + (data.error?.message || 'Unknown error'));
+      }
+    } catch (err) {
+      setError('Upload error');
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +72,7 @@ export default function ProfilePage() {
     }
   };
 
-  if (!user) return <div>Loading...</div>;
+  if (!user) return <div className="text-white p-8">Loading...</div>;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-800 text-white font-sans antialiased py-12">
@@ -76,15 +111,33 @@ export default function ProfilePage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="avatar" className="text-slate-200 font-medium">Avatar URL</Label>
-                <Input
-                  id="avatar"
-                  type="url"
-                  value={avatarUrl}
-                  onChange={(e) => setAvatarUrl(e.target.value)}
-                  placeholder="https://example.com/avatar.jpg"
-                  className="bg-white/10 border-white/20 text-white placeholder:text-slate-400 focus:bg-white/20 focus:ring-2 focus:ring-indigo-400 focus:border-transparent rounded-xl transition-all py-3"
-                />
+                <Label htmlFor="avatar" className="text-slate-200 font-medium">Avatar</Label>
+                <div className="flex items-center gap-3">
+                  <Input
+                    id="avatar"
+                    type="url"
+                    value={avatarUrl}
+                    onChange={(e) => setAvatarUrl(e.target.value)}
+                    placeholder="https://example.com/avatar.jpg"
+                    className="bg-white/10 border-white/20 text-white placeholder:text-slate-400 focus:bg-white/20 focus:ring-2 focus:ring-indigo-400 focus:border-transparent rounded-xl transition-all py-3 flex-1"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="border-white/20 text-slate-200 hover:bg-white/10 rounded-xl transition-all whitespace-nowrap"
+                  >
+                    {uploading ? 'Uploading...' : 'Upload Image'}
+                  </Button>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileUpload}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                </div>
                 {avatarUrl && (
                   <div className="mt-2 rounded-full overflow-hidden border border-white/10 w-16 h-16">
                     <img src={avatarUrl} alt="Avatar preview" className="w-full h-full object-cover" />
@@ -94,7 +147,7 @@ export default function ProfilePage() {
 
               <Button
                 type="submit"
-                disabled={loading}
+                disabled={loading || uploading}
                 className="w-full h-12 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/20 transition-all duration-300 disabled:opacity-50"
               >
                 {loading ? (
