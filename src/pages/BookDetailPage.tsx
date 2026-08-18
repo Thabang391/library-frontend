@@ -86,7 +86,7 @@ export default function BookDetailPage() {
       });
       setReviewRating(5);
       setReviewComment('');
-      await fetchReviews(); // refresh
+      await fetchReviews();
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to submit review');
     } finally {
@@ -124,8 +124,9 @@ export default function BookDetailPage() {
   };
 
   const renderStars = (rating: number, size: number = 4) => {
-    const fullStars = Math.floor(rating);
-    const halfStar = rating % 1 >= 0.5 ? 1 : 0;
+    const numRating = Number(rating) || 0;
+    const fullStars = Math.floor(numRating);
+    const halfStar = numRating % 1 >= 0.5 ? 1 : 0;
     const emptyStars = 5 - fullStars - halfStar;
     return (
       <div className="flex items-center">
@@ -191,7 +192,9 @@ export default function BookDetailPage() {
               <div className="flex items-center gap-4 mb-4">
                 <div className="flex items-center">
                   {renderStars(book.avg_rating, 5)}
-                  <span className="ml-2 text-sm text-slate-400">{book.avg_rating.toFixed(1)} ({book.review_count} reviews)</span>
+                  <span className="ml-2 text-sm text-slate-400">
+                    {Number(book.avg_rating).toFixed(1)} ({book.review_count} reviews)
+                  </span>
                 </div>
                 <Badge variant={book.is_borrowed ? 'destructive' : 'default'} className="text-sm">
                   {book.is_borrowed ? 'Borrowed' : 'Available'}

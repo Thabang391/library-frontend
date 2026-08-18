@@ -195,10 +195,11 @@ export default function BooksPage() {
 
   const totalPages = Math.max(1, Math.ceil(total / limit));
 
-  // Render stars for rating
+  // Render stars for rating – fixed to handle string/number
   const renderStars = (rating: number) => {
-    const fullStars = Math.floor(rating);
-    const halfStar = rating % 1 >= 0.5 ? 1 : 0;
+    const numRating = Number(rating) || 0;
+    const fullStars = Math.floor(numRating);
+    const halfStar = numRating % 1 >= 0.5 ? 1 : 0;
     const emptyStars = 5 - fullStars - halfStar;
     return (
       <div className="flex items-center">
@@ -209,7 +210,7 @@ export default function BooksPage() {
         {[...Array(emptyStars)].map((_, i) => (
           <Star key={`empty-${i}`} className="w-4 h-4 text-slate-500" />
         ))}
-        <span className="ml-1 text-xs text-slate-400">{rating.toFixed(1)}</span>
+        <span className="ml-1 text-xs text-slate-400">{numRating.toFixed(1)}</span>
       </div>
     );
   };
