@@ -15,6 +15,8 @@ import ProfilePage from './pages/ProfilePage';
 import AdminPage from './pages/AdminPage';
 import LoansPage from './pages/LoansPage';
 import BookDetailPage from './pages/BookDetailPage';
+import ListsPage from './pages/ListsPage';
+import ListDetailPage from './pages/ListDetailPage';
 
 function App() {
   return (
