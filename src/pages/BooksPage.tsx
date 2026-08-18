@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Search, X, Filter } from 'lucide-react';
+import { Plus, Search, X, Filter, Star } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 
@@ -22,6 +22,8 @@ interface Book {
   publication_year?: number;
   isbn?: string;
   is_borrowed?: boolean;
+  avg_rating: number;
+  review_count: number;
 }
 
 export default function BooksPage() {
@@ -119,7 +121,7 @@ export default function BooksPage() {
     fetchBooks
   ]);
 
-  // Effect for manual search (triggered by searchTrigger)
+  // Effect for manual search
   useEffect(() => {
     if (searchTrigger > 0) {
       fetchBooks(
@@ -167,7 +169,6 @@ export default function BooksPage() {
     try {
       await API.post('/loans', { bookId });
       alert('Book borrowed successfully!');
-      // Refresh the list to update availability
       fetchBooks(page, limit, sortBy, order, {
         title: debouncedTitle,
         author: debouncedAuthor,
@@ -193,6 +194,25 @@ export default function BooksPage() {
   };
 
   const totalPages = Math.max(1, Math.ceil(total / limit));
+
+  // Render stars for rating
+  const renderStars = (rating: number) => {
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 >= 0.5 ? 1 : 0;
+    const emptyStars = 5 - fullStars - halfStar;
+    return (
+      <div className="flex items-center">
+        {[...Array(fullStars)].map((_, i) => (
+          <Star key={`full-${i}`} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+        ))}
+        {halfStar === 1 && <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" style={{ clipPath: 'inset(0 50% 0 0)' }} />}
+        {[...Array(emptyStars)].map((_, i) => (
+          <Star key={`empty-${i}`} className="w-4 h-4 text-slate-500" />
+        ))}
+        <span className="ml-1 text-xs text-slate-400">{rating.toFixed(1)}</span>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-800 text-white font-sans antialiased pb-16">
@@ -319,6 +339,7 @@ export default function BooksPage() {
                   <SelectItem value="title">Title</SelectItem>
                   <SelectItem value="author">Author</SelectItem>
                   <SelectItem value="year">Year</SelectItem>
+                  <SelectItem value="rating">Rating</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -383,6 +404,7 @@ export default function BooksPage() {
                     <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">Author</TableHead>
                     <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">Genre</TableHead>
                     <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">Year</TableHead>
+                    <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">Rating</TableHead>
                     <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</TableHead>
                     {canModify && (
                       <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Actions</TableHead>
@@ -402,10 +424,21 @@ export default function BooksPage() {
                           <div className="w-12 h-16 bg-white/5 rounded-md border border-white/5 flex items-center justify-center text-slate-500 text-xs">No cover</div>
                         )}
                       </TableCell>
-                      <TableCell className="px-6 py-4 text-sm font-semibold text-white">{book.title}</TableCell>
+                      <TableCell className="px-6 py-4 text-sm font-semibold text-white">
+                        <Link to={`/books/${book.id}`} className="hover:text-indigo-300 transition-colors">
+                          {book.title}
+                        </Link>
+                      </TableCell>
                       <TableCell className="px-6 py-4 text-sm text-slate-300">{book.author}</TableCell>
                       <TableCell className="px-6 py-4 text-sm text-slate-300">{book.genre || '—'}</TableCell>
                       <TableCell className="px-6 py-4 text-sm text-slate-300">{book.publication_year || '—'}</TableCell>
+                      <TableCell className="px-6 py-4 text-sm">
+                        {book.review_count > 0 ? (
+                          renderStars(book.avg_rating)
+                        ) : (
+                          <span className="text-slate-500 text-xs">No ratings</span>
+                        )}
+                      </TableCell>
                       <TableCell className="px-6 py-4">
                         {book.is_borrowed ? (
                           <Badge variant="secondary" className="bg-red-500/20 text-red-300">Borrowed</Badge>

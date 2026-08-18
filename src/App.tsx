@@ -14,6 +14,7 @@ import AuthorFormPage from '@/pages/AuthorFormPage';
 import ProfilePage from './pages/ProfilePage';
 import AdminPage from './pages/AdminPage';
 import LoansPage from './pages/LoansPage';
+import BookDetailPage from './pages/BookDetailPage';
 
 function App() {
   return (
@@ -45,7 +46,7 @@ function App() {
               <Route
                 path="/books/new"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute allowedRoles={['admin', 'librarian']}>
                     <BookFormPage />
                   </ProtectedRoute>
                 }
@@ -53,15 +54,23 @@ function App() {
               <Route
                 path="/books/:id/edit"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute allowedRoles={['admin', 'librarian']}>
                     <BookFormPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/books/:id"
+                element={
+                  <ProtectedRoute>
+                    <BookDetailPage />
                   </ProtectedRoute>
                 }
               />
               <Route
                 path="/authors/new"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute allowedRoles={['admin', 'librarian']}>
                     <AuthorFormPage />
                   </ProtectedRoute>
                 }
@@ -69,20 +78,20 @@ function App() {
               <Route
                 path="/authors/:id/edit"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute allowedRoles={['admin', 'librarian']}>
                     <AuthorFormPage />
                   </ProtectedRoute>
                 }
               />
               <Route
-  path="/profile"
-  element={
-    <ProtectedRoute>
-      <ProfilePage />
-    </ProtectedRoute>
-  }
-/>
-<Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <ProfilePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/admin"
                 element={
                   <ProtectedRoute allowedRoles={['admin']}>
@@ -91,13 +100,13 @@ function App() {
                 }
               />
               <Route
-  path="/loans"
-  element={
-    <ProtectedRoute>
-      <LoansPage />
-    </ProtectedRoute>
-  }
-/>
+                path="/loans"
+                element={
+                  <ProtectedRoute>
+                    <LoansPage />
+                  </ProtectedRoute>
+                }
+              />
             </Routes>
           </main>
         </div>
