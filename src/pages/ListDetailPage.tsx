@@ -88,7 +88,7 @@ export default function ListDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-800 text-white font-sans antialiased pb-16">
+    <div className="min-h-screen bg-white dark:bg-slate-900 text-white font-sans antialiased pb-16">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-12">
         <div className="flex items-center gap-4 mb-6">
           <Link to="/lists" className="text-slate-300 hover:text-white transition-colors">

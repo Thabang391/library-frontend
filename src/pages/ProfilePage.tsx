@@ -135,7 +135,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-800 text-white font-sans antialiased py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+    <div className="min-h-screen bg-white dark:bg-slate-900 text-white font-sans antialiased py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
       <div className="w-full max-w-3xl">
         <Card className="border-0 shadow-2xl shadow-indigo-950/50 bg-white/5 backdrop-blur-xl rounded-3xl overflow-hidden">
           

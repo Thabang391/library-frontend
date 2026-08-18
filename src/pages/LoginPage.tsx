@@ -31,7 +31,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-800 px-4 py-12">
+    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-white dark:bg-slate-900 px-4 py-12">
       <Card className="w-full max-w-md border-0 shadow-2xl bg-white/5 backdrop-blur-xl rounded-3xl overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent pointer-events-none" />
         <CardHeader className="space-y-1 text-center relative">

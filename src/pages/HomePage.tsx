@@ -5,7 +5,7 @@ export default function HomePage() {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-800 text-white font-sans antialiased flex flex-col">
+    <div className="min-h-screen bg-white dark:bg-slate-900 text-white font-sans antialiased flex flex-col">
       <main className="flex-1 flex flex-col items-center justify-center w-full max-w-6xl mx-auto px-6 py-8 text-center">
         {user ? (
           <>

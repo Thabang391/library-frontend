@@ -61,7 +61,7 @@ export default function AuthorFormPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-800 text-white font-sans antialiased">
+    <div className="min-h-screen bg-white dark:bg-slate-900 text-white font-sans antialiased">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         
         <div className="mb-6">

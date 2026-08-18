@@ -57,7 +57,7 @@ export default function LoansPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-800 text-white font-sans antialiased pb-16">
+    <div className="min-h-screen bg-white dark:bg-slate-900 text-white font-sans antialiased pb-16">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-12">
         <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-300 to-violet-300 bg-clip-text text-transparent mb-8">My Loans</h1>
 

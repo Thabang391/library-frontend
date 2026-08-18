@@ -64,7 +64,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-800 text-white font-sans antialiased pb-16">
+    <div className="min-h-screen bg-white dark:bg-slate-900 text-white font-sans antialiased pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-12">
         <h1 className="text-3xl font-bold text-white mb-8">Admin Dashboard</h1>
 
