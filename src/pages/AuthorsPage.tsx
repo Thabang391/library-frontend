@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import API from '@/api';
+import { useAuth } from '@/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -15,9 +16,12 @@ interface Author {
 }
 
 export default function AuthorsPage() {
+  const { user } = useAuth();
   const [authors, setAuthors] = useState<Author[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
+
+  const canModify = user && ['admin', 'librarian'].includes(user.role);
 
   const fetchAuthors = async () => {
     setLoading(true);
@@ -37,6 +41,7 @@ export default function AuthorsPage() {
   }, []);
 
   const handleDelete = async (id: number) => {
+    if (!canModify) return;
     if (!window.confirm('Delete this author? All their books will also be deleted.')) return;
     try {
       await API.delete(`/authors/${id}`);
@@ -49,19 +54,20 @@ export default function AuthorsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-800 text-white font-sans antialiased pb-16">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-12">
-        
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-300 to-violet-300 bg-clip-text text-transparent">Authors</h1>
             <p className="text-slate-300 mt-1">Manage the creators behind your books</p>
           </div>
-          <Link 
-  to="/authors/new" 
-  className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white shadow-lg shadow-indigo-500/20 rounded-xl px-6 py-3 transition-all duration-300 font-medium text-sm"
->
-  <Plus className="w-5 h-5" />
-  <span>Create New Author</span>
-</Link>
+          {canModify && (
+            <Link
+              to="/authors/new"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white shadow-lg shadow-indigo-500/20 rounded-xl px-6 py-3 transition-all duration-300 font-medium text-sm"
+            >
+              <Plus className="w-5 h-5" />
+              <span>Create New Author</span>
+            </Link>
+          )}
         </div>
 
         {error && (
@@ -93,7 +99,9 @@ export default function AuthorsPage() {
                     <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">ID</TableHead>
                     <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">Name</TableHead>
                     <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">Book Count</TableHead>
-                    <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Actions</TableHead>
+                    {canModify && (
+                      <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Actions</TableHead>
+                    )}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -106,10 +114,12 @@ export default function AuthorsPage() {
                           {author.book_count} Books
                         </Badge>
                       </TableCell>
-                      <TableCell className="px-6 py-4 text-right space-x-5">
-                        <Link to={`/authors/${author.id}/edit`} className="font-medium text-indigo-300 hover:text-indigo-100 transition-colors">Edit</Link>
-                        <button onClick={() => handleDelete(author.id)} className="font-medium text-red-400 hover:text-red-200 transition-colors">Delete</button>
-                      </TableCell>
+                      {canModify && (
+                        <TableCell className="px-6 py-4 text-right space-x-5">
+                          <Link to={`/authors/${author.id}/edit`} className="font-medium text-indigo-300 hover:text-indigo-100 transition-colors">Edit</Link>
+                          <button onClick={() => handleDelete(author.id)} className="font-medium text-red-400 hover:text-red-200 transition-colors">Delete</button>
+                        </TableCell>
+                      )}
                     </TableRow>
                   ))}
                 </TableBody>

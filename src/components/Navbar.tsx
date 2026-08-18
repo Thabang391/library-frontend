@@ -13,19 +13,70 @@ export default function Navbar() {
     navigate('/');
   };
 
+  // Desktop link styles – compact, premium
   const getDesktopLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
+    `px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
       isActive
-        ? 'bg-white/20 text-white shadow-inner backdrop-blur-sm'
+        ? 'bg-white/20 text-white shadow-sm backdrop-blur-sm'
         : 'text-slate-300 hover:text-white hover:bg-white/10'
     }`;
 
+  // Mobile link styles
   const getMobileLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `block px-4 py-3 rounded-lg text-base font-medium transition-colors duration-200 ${
+    `block px-4 py-2.5 rounded-lg text-base font-medium transition-colors duration-200 ${
       isActive
         ? 'bg-white/20 text-white backdrop-blur-sm'
         : 'text-slate-300 hover:bg-white/10 hover:text-white'
     }`;
+
+  // Role-based links for desktop
+  const renderDesktopLinks = () => {
+    if (!user) return null;
+
+    const links = [
+      { to: '/books', label: 'Books' },
+      { to: '/authors', label: 'Authors' },
+      { to: '/loans', label: 'My Loans' },
+      { to: '/lists', label: 'My Lists' },
+      { to: '/profile', label: 'Profile' },
+    ];
+
+    // Admin-only links
+    if (user.role === 'admin') {
+      links.push({ to: '/admin/dashboard', label: 'Dashboard' });
+      links.push({ to: '/admin', label: 'Users' });
+    }
+
+    return links.map((link) => (
+      <NavLink key={link.to} to={link.to} className={getDesktopLinkClass}>
+        {link.label}
+      </NavLink>
+    ));
+  };
+
+  // Mobile menu links
+  const renderMobileLinks = () => {
+    if (!user) return null;
+
+    const links = [
+      { to: '/books', label: 'Books' },
+      { to: '/authors', label: 'Authors' },
+      { to: '/loans', label: 'My Loans' },
+      { to: '/lists', label: 'My Lists' },
+      { to: '/profile', label: 'Profile' },
+    ];
+
+    if (user.role === 'admin') {
+      links.push({ to: '/admin/dashboard', label: 'Dashboard' });
+      links.push({ to: '/admin', label: 'Users' });
+    }
+
+    return links.map((link) => (
+      <NavLink key={link.to} to={link.to} className={getMobileLinkClass} onClick={() => setMobileOpen(false)}>
+        {link.label}
+      </NavLink>
+    ));
+  };
 
   return (
     <nav className="sticky top-0 z-50 bg-white/10 backdrop-blur-xl border-b border-white/10">
@@ -41,54 +92,41 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Desktop Nav Links */}
-          <div className="hidden md:flex items-center gap-2">
-            {user && (
-              <>
-                <NavLink to="/books" className={getDesktopLinkClass}>Books</NavLink>
-                <NavLink to="/authors" className={getDesktopLinkClass}>Authors</NavLink>
-                {user.role === 'admin' && (
-                  <NavLink to="/admin" className={getDesktopLinkClass}>Admin</NavLink>
-                )}
-                <NavLink to="/loans" className={getDesktopLinkClass}>My Loans</NavLink>
-                <NavLink to="/profile" className={getDesktopLinkClass}>Profile</NavLink>
-                <NavLink to="/lists" className={getDesktopLinkClass}>My Lists</NavLink>
-                 <NavLink to="/admin" className={getDesktopLinkClass}>Users</NavLink>
-    <NavLink to="/admin/dashboard" className={getDesktopLinkClass}>Dashboard</NavLink>
-              </>
-            )}
+          {/* Desktop Nav Links (compact) */}
+          <div className="hidden md:flex items-center gap-1.5">
+            {user && renderDesktopLinks()}
           </div>
 
           {/* Desktop Auth Controls */}
           <div className="hidden md:flex items-center gap-4">
             {user ? (
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-3 px-4 py-1.5 bg-white/10 backdrop-blur-sm rounded-full border border-white/10">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full border border-white/10">
                   {user.avatar_url ? (
-                    <img src={user.avatar_url} alt={user.username} className="w-8 h-8 rounded-full object-cover" />
+                    <img src={user.avatar_url} alt={user.username} className="w-7 h-7 rounded-full object-cover" />
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-white text-xs font-bold">
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
                       {user.username?.substring(0, 2).toUpperCase() || user.email?.substring(0, 2).toUpperCase()}
                     </div>
                   )}
-                  <span className="text-sm font-medium text-slate-200">{user.username || user.email}</span>
-                  <span className="text-xs text-slate-400 bg-white/10 px-2 py-0.5 rounded-full">
+                  <span className="text-sm font-medium text-slate-200 truncate max-w-[100px]">{user.username || user.email}</span>
+                  <span className="text-[10px] text-slate-400 bg-white/10 px-1.5 py-0.5 rounded-full">
                     {user.role}
                   </span>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="px-4 py-2 text-sm font-semibold text-white bg-white/10 backdrop-blur-sm rounded-full border border-white/20 hover:bg-white/20 transition-all duration-300"
+                  className="px-3 py-1.5 text-sm font-semibold text-white bg-white/10 backdrop-blur-sm rounded-full border border-white/20 hover:bg-white/20 transition-all duration-300"
                 >
                   Logout
                 </button>
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <Link to="/login" className="px-5 py-2 text-sm font-semibold text-slate-300 hover:text-white transition-colors duration-300">
+                <Link to="/login" className="px-4 py-1.5 text-sm font-semibold text-slate-300 hover:text-white transition-colors duration-300">
                   Login
                 </Link>
-                <Link to="/register" className="px-5 py-2 text-sm font-semibold text-white bg-gradient-to-r from-indigo-500 to-violet-600 rounded-full hover:shadow-lg hover:shadow-indigo-500/30 transition-all duration-300">
+                <Link to="/register" className="px-4 py-1.5 text-sm font-semibold text-white bg-gradient-to-r from-indigo-500 to-violet-600 rounded-full hover:shadow-lg hover:shadow-indigo-500/30 transition-all duration-300">
                   Register
                 </Link>
               </div>
@@ -116,46 +154,37 @@ export default function Navbar() {
       {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden border-t border-white/10 bg-white/10 backdrop-blur-xl">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+          <div className="px-2 pt-2 pb-3 space-y-0.5 sm:px-3">
             {user ? (
               <>
-                <div className="flex items-center gap-3 px-4 py-3 mb-2 border-b border-white/10">
+                <div className="flex items-center gap-3 px-4 py-2.5 mb-2 border-b border-white/10">
                   {user.avatar_url ? (
-                    <img src={user.avatar_url} alt={user.username} className="w-10 h-10 rounded-full object-cover" />
+                    <img src={user.avatar_url} alt={user.username} className="w-9 h-9 rounded-full object-cover" />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-white text-sm font-bold">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-white text-sm font-bold">
                       {user.username?.substring(0, 2).toUpperCase() || user.email?.substring(0, 2).toUpperCase()}
                     </div>
                   )}
                   <div className="flex flex-col">
                     <span className="text-xs text-slate-400">Signed in as</span>
                     <span className="text-sm font-semibold text-white truncate">{user.username || user.email}</span>
-                    <span className="text-xs text-slate-400">{user.role}</span>
+                    <span className="text-[10px] text-slate-400">{user.role}</span>
                   </div>
                 </div>
-                <NavLink to="/books" className={getMobileLinkClass} onClick={() => setMobileOpen(false)}>Books</NavLink>
-                <NavLink to="/authors" className={getMobileLinkClass} onClick={() => setMobileOpen(false)}>Authors</NavLink>
-                {user.role === 'admin' && (
-                  <NavLink to="/admin" className={getMobileLinkClass} onClick={() => setMobileOpen(false)}>Admin</NavLink>
-                )}
-                <NavLink to="/loans" className={getMobileLinkClass} onClick={() => setMobileOpen(false)}>My Loans</NavLink>
-                <NavLink to="/profile" className={getMobileLinkClass} onClick={() => setMobileOpen(false)}>Profile</NavLink>
-                <NavLink to="/lists" className={getMobileLinkClass} onClick={() => setMobileOpen(false)}>My Lists</NavLink>
-                <NavLink to="/admin/dashboard" className={getMobileLinkClass} onClick={() => setMobileOpen(false)}>Dashboard</NavLink>
-                <NavLink to="/admin" className={getMobileLinkClass} onClick={() => setMobileOpen(false)}>Users</NavLink>
+                {renderMobileLinks()}
                 <button
                   onClick={handleLogout}
-                  className="block w-full text-left px-4 py-3 rounded-lg text-base font-medium text-red-300 hover:bg-red-500/20 hover:text-red-100 transition-colors duration-200 mt-2"
+                  className="block w-full text-left px-4 py-2.5 rounded-lg text-base font-medium text-red-300 hover:bg-red-500/20 hover:text-red-100 transition-colors duration-200 mt-1"
                 >
                   Logout
                 </button>
               </>
             ) : (
               <div className="space-y-2 pt-2">
-                <Link to="/login" onClick={() => setMobileOpen(false)} className="block w-full text-center px-4 py-3 rounded-lg text-base font-semibold text-slate-300 bg-white/10 hover:bg-white/20 transition-colors duration-200">
+                <Link to="/login" onClick={() => setMobileOpen(false)} className="block w-full text-center px-4 py-2.5 rounded-lg text-base font-semibold text-slate-300 bg-white/10 hover:bg-white/20 transition-colors duration-200">
                   Login
                 </Link>
-                <Link to="/register" onClick={() => setMobileOpen(false)} className="block w-full text-center px-4 py-3 rounded-lg text-base font-semibold text-white bg-gradient-to-r from-indigo-500 to-violet-600 hover:shadow-lg transition-all duration-200">
+                <Link to="/register" onClick={() => setMobileOpen(false)} className="block w-full text-center px-4 py-2.5 rounded-lg text-base font-semibold text-white bg-gradient-to-r from-indigo-500 to-violet-600 hover:shadow-lg transition-all duration-200">
                   Register
                 </Link>
               </div>
