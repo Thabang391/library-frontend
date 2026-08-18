@@ -17,6 +17,7 @@ import LoansPage from './pages/LoansPage';
 import BookDetailPage from './pages/BookDetailPage';
 import ListsPage from './pages/ListsPage';
 import ListDetailPage from './pages/ListDetailPage';
+import AdminDashboard from './pages/AdminDashboard';
 
 function App() {
   return (
@@ -122,6 +123,14 @@ function App() {
   element={
     <ProtectedRoute>
       <ListDetailPage />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/admin/dashboard"
+  element={
+    <ProtectedRoute allowedRoles={['admin']}>
+      <AdminDashboard />
     </ProtectedRoute>
   }
 />

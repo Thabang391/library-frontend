@@ -53,6 +53,8 @@ export default function Navbar() {
                 <NavLink to="/loans" className={getDesktopLinkClass}>My Loans</NavLink>
                 <NavLink to="/profile" className={getDesktopLinkClass}>Profile</NavLink>
                 <NavLink to="/lists" className={getDesktopLinkClass}>My Lists</NavLink>
+                 <NavLink to="/admin" className={getDesktopLinkClass}>Users</NavLink>
+    <NavLink to="/admin/dashboard" className={getDesktopLinkClass}>Dashboard</NavLink>
               </>
             )}
           </div>
@@ -139,6 +141,8 @@ export default function Navbar() {
                 <NavLink to="/loans" className={getMobileLinkClass} onClick={() => setMobileOpen(false)}>My Loans</NavLink>
                 <NavLink to="/profile" className={getMobileLinkClass} onClick={() => setMobileOpen(false)}>Profile</NavLink>
                 <NavLink to="/lists" className={getMobileLinkClass} onClick={() => setMobileOpen(false)}>My Lists</NavLink>
+                <NavLink to="/admin/dashboard" className={getMobileLinkClass} onClick={() => setMobileOpen(false)}>Dashboard</NavLink>
+                <NavLink to="/admin" className={getMobileLinkClass} onClick={() => setMobileOpen(false)}>Users</NavLink>
                 <button
                   onClick={handleLogout}
                   className="block w-full text-left px-4 py-3 rounded-lg text-base font-medium text-red-300 hover:bg-red-500/20 hover:text-red-100 transition-colors duration-200 mt-2"
