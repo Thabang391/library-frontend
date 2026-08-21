@@ -6,7 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Check, Plus } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -20,6 +20,19 @@ interface AddToListPopoverProps {
   bookId: number;
   trigger: React.ReactNode;
 }
+
+const RR_STYLE = `
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600;700&display=swap');
+  .rr-popover-scope { font-family: 'Public Sans', ui-sans-serif, system-ui, sans-serif; color: #241C10; }
+  .rr-display { font-family: 'Fraunces', ui-serif, Georgia, serif; }
+  .rr-mono { font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace; }
+  .rr-ruled-input {
+    background: transparent; border: none; border-bottom: 1.5px solid #C9BB9C;
+    border-radius: 0; padding-left: 2px; color: #241C10;
+  }
+  .rr-ruled-input::placeholder { color: #A99A7A; }
+  .rr-ruled-input:focus { outline: none; box-shadow: none; border-bottom-color: #B08968; border-bottom-width: 2px; }
+`;
 
 export default function AddToListPopover({ bookId, trigger }: AddToListPopoverProps) {
   const { user } = useAuth();
@@ -99,17 +112,18 @@ export default function AddToListPopover({ bookId, trigger }: AddToListPopoverPr
   };
 
   return (
-    <>
+    <div className="rr-popover-scope">
+      <style>{RR_STYLE}</style>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>{trigger}</PopoverTrigger>
-        <PopoverContent className="w-72 p-0 bg-slate-800 border-white/10 text-white" align="start">
-          <Command>
-            <CommandInput placeholder="Search lists..." className="text-white placeholder:text-slate-400" />
+        <PopoverContent className="rr-popover-scope w-72 p-0 bg-[#FFFDF8] border-[#D9C9A3] text-[#241C10] rounded-md" align="start">
+          <Command className="bg-transparent">
+            <CommandInput placeholder="Search shelves…" className="rr-mono text-sm text-[#241C10] placeholder:text-[#A99A7A]" />
             <CommandList>
-              <CommandEmpty>No lists found.</CommandEmpty>
+              <CommandEmpty className="rr-mono text-xs text-[#8A7A54] py-4">No shelves found.</CommandEmpty>
               <CommandGroup>
                 {loading ? (
-                  <div className="p-4 text-center text-slate-400">Loading...</div>
+                  <div className="rr-mono p-4 text-center text-xs text-[#8A7A54] uppercase tracking-wide">Loading…</div>
                 ) : (
                   lists.map((list) => {
                     const isChecked = checkedLists.includes(list.id);
@@ -117,79 +131,79 @@ export default function AddToListPopover({ bookId, trigger }: AddToListPopoverPr
                       <CommandItem
                         key={list.id}
                         onSelect={() => handleToggleList(list.id)}
-                        className="flex items-center justify-between text-white hover:bg-white/10 cursor-pointer"
+                        className="flex items-center justify-between text-[#241C10] hover:bg-[#EFE6D3] cursor-pointer rounded-sm"
                       >
-                        <span>{list.name}</span>
-                        {isChecked && <Check className="w-4 h-4 text-indigo-400" />}
+                        <span className="text-sm">{list.name}</span>
+                        {isChecked && <Check className="w-4 h-4 text-[#1F4738]" />}
                       </CommandItem>
                     );
                   })
                 )}
                 <CommandItem
                   onSelect={() => setIsDialogOpen(true)}
-                  className="flex items-center gap-2 text-indigo-300 hover:bg-white/10 cursor-pointer"
+                  className="rr-mono flex items-center gap-2 text-[11px] uppercase tracking-wide text-[#1F4738] font-semibold hover:bg-[#EFE6D3] cursor-pointer rounded-sm"
                 >
-                  <Plus className="w-4 h-4" />
-                  Create new list
+                  <Plus className="w-3.5 h-3.5" />
+                  Create new shelf
                 </CommandItem>
               </CommandGroup>
             </CommandList>
           </Command>
-          {error && <p className="text-xs text-red-400 p-2">{error}</p>}
-          {success && <p className="text-xs text-green-400 p-2">{success}</p>}
+          {error && <p className="rr-mono text-[10px] uppercase tracking-wide text-[#A63D2F] p-2">{error}</p>}
+          {success && <p className="rr-mono text-[10px] uppercase tracking-wide text-[#1F4738] p-2">{success}</p>}
         </PopoverContent>
       </Popover>
 
       {/* Dialog for creating a new list */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="bg-slate-800 border-white/10 text-white">
+        <DialogContent className="rr-popover-scope bg-[#FFFDF8] border-[#D9C9A3] text-[#241C10] rounded-md">
           <DialogHeader>
-            <DialogTitle className="text-white">Create New List</DialogTitle>
+            <DialogTitle className="rr-display text-[#1F4738] text-xl font-semibold">Create a New Shelf</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleCreateList} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="new-list-name" className="text-slate-300">List Name *</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="new-list-name" className="rr-mono text-[10px] text-[#8A7A54] font-semibold tracking-[0.15em] uppercase">Shelf Name *</Label>
               <Input
                 id="new-list-name"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 placeholder="e.g., Books to Read"
-                className="bg-slate-900/50 border-white/20 text-white placeholder:text-slate-500 focus:ring-indigo-400 rounded-xl"
+                className="rr-ruled-input h-9 text-sm"
                 required
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="new-list-desc" className="text-slate-300">Description (optional)</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="new-list-desc" className="rr-mono text-[10px] text-[#8A7A54] font-semibold tracking-[0.15em] uppercase">Description (optional)</Label>
               <Textarea
                 id="new-list-desc"
                 value={newDescription}
                 onChange={(e) => setNewDescription(e.target.value)}
                 placeholder="What's this list about?"
-                className="bg-slate-900/50 border-white/20 text-white placeholder:text-slate-500 focus:ring-indigo-400 rounded-xl"
+                className="bg-[#F6F1E7] border-[#D9C9A3] text-[#241C10] placeholder:text-[#A99A7A] focus-visible:ring-[#B08968] rounded-sm"
                 rows={3}
               />
             </div>
-            {error && <p className="text-xs text-red-400">{error}</p>}
+            {error && <p className="rr-mono text-[10px] uppercase tracking-wide text-[#A63D2F]">{error}</p>}
             <div className="flex justify-end gap-3">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setIsDialogOpen(false)}
-                className="border-white/20 text-slate-200 hover:bg-white/10 rounded-xl"
+                className="rr-mono border-[#D9C9A3] text-[#4A3F2A] hover:bg-[#EFE6D3] rounded-sm text-xs uppercase tracking-wide"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white rounded-xl px-6 py-2"
+                className="rr-mono bg-[#1F4738] hover:bg-[#24543F] text-[#F6F1E7] rounded-sm px-6 text-xs uppercase tracking-wide"
               >
-                {isSubmitting ? 'Creating...' : 'Create'}
+                {isSubmitting ? 'Creating…' : 'Create'}
               </Button>
             </div>
           </form>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 }

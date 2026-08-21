@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
+import { BookOpen } from 'lucide-react';
 import { useAuth } from '@/AuthContext';
 
 interface Loan {
@@ -52,97 +52,136 @@ export default function LoansPage() {
     }
   };
 
-  const isOverdue = (dueDate: string) => {
-    return new Date(dueDate) < new Date() && !loans.find(l => l.id === loanId)?.returned_at; // we'll compute inside map
-  };
-
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900 text-white font-sans antialiased pb-16">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-12">
-        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-300 to-violet-300 bg-clip-text text-transparent mb-8">My Loans</h1>
+    <div className="relative rr-scope min-h-screen bg-[#F6F1E7] dark:bg-[#0a0a0a] font-[500] antialiased pb-16">
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600;700&display=swap');
+        .rr-scope { font-family: 'Public Sans', ui-sans-serif, system-ui, sans-serif; color: #241C10; }
+        .rr-display { font-family: 'Fraunces', ui-serif, Georgia, serif; }
+        .rr-mono { font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace; }
+        .rr-scope ::-webkit-scrollbar { height: 10px; width: 10px; }
+        .rr-scope ::-webkit-scrollbar-track { background: #EFE6D3; }
+        .rr-scope ::-webkit-scrollbar-thumb { background: #B08968; border-radius: 999px; border: 2px solid #EFE6D3; }
+        .rr-corner { position: relative; background: #FFFDF8; padding: 3px; border: 1px solid #E4D8BE; }
+        .rr-stamp { transform: rotate(-4deg); border: 2px solid currentColor; border-radius: 3px; box-shadow: 0 0 0 1px currentColor inset; }
+      `}</style>
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        <div
+          className="absolute inset-0 pointer-events-none opacity-[0.4] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJmIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjc0IiBudW1PY3RhdmVzPSIzIiAvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNmKSIgb3BhY2l0eT0iMC4yIiAvPjwvc3ZnPg==')] bg-repeat"
+        />
+        {/* Plaque header */}
+        <div className="rr-display bg-[#1F4738] rounded-t-md relative overflow-hidden mb-8">
+          <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-transparent via-[#D9C08F] to-transparent" />
+          <div className="flex items-center gap-4 px-6 md:px-9 py-7">
+            <div className="w-11 h-11 rounded-full border-2 border-[#B08968] flex items-center justify-center shrink-0 bg-[#173328]">
+              <BookOpen className="w-5 h-5 text-[#D9C08F]" strokeWidth={1.75} />
+            </div>
+            <div>
+              <h1 className="text-3xl md:text-[2.2rem] leading-none font-semibold tracking-tight text-[#F6F1E7]">My Loans</h1>
+              <p className="rr-mono text-[11px] tracking-[0.2em] uppercase text-[#B9CDC1] mt-2">Circulation Record</p>
+            </div>
+          </div>
+        </div>
 
         {error && (
-          <Alert variant="destructive" className="mb-6 bg-red-500/20 border-red-400/30 text-red-200 backdrop-blur-sm rounded-xl">
-            <AlertDescription>{error}</AlertDescription>
+          <Alert variant="destructive" className="mb-6 bg-[#F6DED8] border-[#A63D2F]/40 text-[#7A2C21] rounded-sm">
+            <AlertDescription className="rr-mono text-xs">{error}</AlertDescription>
           </Alert>
         )}
         {success && (
-          <Alert className="mb-6 bg-green-500/20 border-green-400/30 text-green-200 backdrop-blur-sm rounded-xl">
-            <AlertDescription>{success}</AlertDescription>
+          <Alert className="mb-6 bg-[#E3EEE5] border-[#1F4738]/30 text-[#1F4738] rounded-sm">
+            <AlertDescription className="rr-mono text-xs">{success}</AlertDescription>
           </Alert>
         )}
 
-        <Card className="border-0 shadow-2xl bg-white/5 backdrop-blur-xl rounded-3xl overflow-hidden">
-          <CardHeader className="bg-transparent border-b border-white/10 py-5">
-            <CardTitle className="text-white text-xl font-bold">Borrowed Books</CardTitle>
-            <CardDescription className="text-slate-300">Track your borrowed books and due dates</CardDescription>
+        <Card className="border border-[#D9C9A3] shadow-[0_20px_40px_-24px_rgba(31,71,56,0.35)] bg-[#FFFDF8] rounded-md overflow-hidden">
+          <CardHeader className="bg-[#FFFDF8] border-b-2 border-[#1F4738] py-5 px-7">
+            <CardTitle className="rr-display text-[#1F4738] text-xl font-semibold tracking-tight">Borrowed Books</CardTitle>
+            <CardDescription className="rr-mono text-[11px] text-[#4A3F2A] tracking-wide">Track your borrowed books and due dates</CardDescription>
           </CardHeader>
           <CardContent className="p-0">
             {loading ? (
-              <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-400"></div>
+              <div className="flex flex-col justify-center items-center h-64 gap-4">
+                <div className="w-10 h-10 rounded-full border-[3px] border-[#E4D8BE] border-t-[#1F4738] animate-spin" />
+                <span className="rr-mono text-[11px] uppercase tracking-[0.2em] text-[#8A7A54]">Retrieving records…</span>
               </div>
             ) : loans.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-64 text-center px-4">
-                <svg className="w-16 h-16 text-slate-500 mb-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
-                <h3 className="text-xl font-semibold text-white">No loans</h3>
-                <p className="text-slate-300 text-sm mt-1">You haven't borrowed any books yet.</p>
+                <div className="w-16 h-16 rounded-full border-2 border-dashed border-[#D9C9A3] flex items-center justify-center mb-5">
+                  <BookOpen className="w-7 h-7 text-[#B08968]" strokeWidth={1.5} />
+                </div>
+                <h3 className="rr-display text-2xl font-semibold text-[#1F4738]">No loans</h3>
+                <p className="text-[#6B5B3F] text-sm mt-2">You haven&apos;t borrowed any books yet.</p>
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-b border-white/10 hover:bg-white/5">
-                    <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">Cover</TableHead>
-                    <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">Title</TableHead>
-                    <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">Author</TableHead>
-                    <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">Borrowed</TableHead>
-                    <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">Due Date</TableHead>
-                    <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</TableHead>
-                    <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {loans.map((loan) => {
-                    const isOverdue = !loan.returned_at && new Date(loan.due_date) < new Date();
-                    return (
-                      <TableRow key={loan.id} className="border-b border-white/5 transition-all hover:bg-white/5">
-                        <TableCell className="px-6 py-4">
-                          {loan.cover_image_url ? (
-                            <img src={loan.cover_image_url} alt={loan.title} className="w-12 h-16 object-cover rounded-md border border-white/10" />
-                          ) : (
-                            <div className="w-12 h-16 bg-white/5 rounded-md border border-white/5 flex items-center justify-center text-slate-500 text-xs">No cover</div>
-                          )}
-                        </TableCell>
-                        <TableCell className="px-6 py-4 text-sm font-semibold text-white">{loan.title}</TableCell>
-                        <TableCell className="px-6 py-4 text-sm text-slate-300">{loan.author}</TableCell>
-                        <TableCell className="px-6 py-4 text-sm text-slate-300">{new Date(loan.borrowed_at).toLocaleDateString()}</TableCell>
-                        <TableCell className="px-6 py-4 text-sm text-slate-300">{new Date(loan.due_date).toLocaleDateString()}</TableCell>
-                        <TableCell className="px-6 py-4 text-sm">
-                          {loan.returned_at ? (
-                            <Badge variant="secondary" className="bg-green-500/20 text-green-300">Returned</Badge>
-                          ) : isOverdue ? (
-                            <Badge variant="destructive" className="bg-red-500/20 text-red-300">Overdue</Badge>
-                          ) : (
-                            <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-300">Active</Badge>
-                          )}
-                        </TableCell>
-                        <TableCell className="px-6 py-4 text-right">
-                          {!loan.returned_at && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleReturn(loan.id)}
-                              className="border-white/20 text-slate-200 hover:bg-white/10 rounded-xl"
-                            >
-                              Return
-                            </Button>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-b-2 border-[#1F4738] bg-[#1F4738] hover:bg-[#1F4738]">
+                      <TableHead className="rr-mono py-4 px-6 text-[10px] font-semibold text-[#B9CDC1] uppercase tracking-[0.15em] w-[90px]">Cover</TableHead>
+                      <TableHead className="rr-mono py-4 px-6 text-[10px] font-semibold text-[#D9C08F] uppercase tracking-[0.15em] min-w-[180px]">Title</TableHead>
+                      <TableHead className="rr-mono py-4 px-6 text-[10px] font-semibold text-[#B9CDC1] uppercase tracking-[0.15em] min-w-[140px]">Author</TableHead>
+                      <TableHead className="rr-mono py-4 px-6 text-[10px] font-semibold text-[#B9CDC1] uppercase tracking-[0.15em] w-[120px]">Borrowed</TableHead>
+                      <TableHead className="rr-mono py-4 px-6 text-[10px] font-semibold text-[#B9CDC1] uppercase tracking-[0.15em] w-[120px]">Due Date</TableHead>
+                      <TableHead className="rr-mono py-4 px-6 text-[10px] font-semibold text-[#B9CDC1] uppercase tracking-[0.15em] w-[120px]">Status</TableHead>
+                      <TableHead className="rr-mono py-4 px-6 text-[10px] font-semibold text-[#B9CDC1] uppercase tracking-[0.15em] text-right w-[120px]">Action</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {loans.map((loan, idx) => {
+                      const isOverdue = !loan.returned_at && new Date(loan.due_date) < new Date();
+                      return (
+                        <TableRow
+                          key={loan.id}
+                          className={`border-b border-[#E4D8BE] transition-colors hover:bg-[#F1E4C4] ${idx % 2 === 1 ? 'bg-[#F6F1E7]' : 'bg-[#FFFDF8]'}`}
+                        >
+                          <TableCell className="px-6 py-4">
+                            <div className="rr-corner w-11 h-[3.6rem] shadow-sm">
+                              {loan.cover_image_url ? (
+                                <img src={loan.cover_image_url} alt={loan.title} className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center bg-[#EFE6D3] text-[#8A7A54] text-[9px] font-medium text-center leading-tight px-1">No cover</div>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell className="px-6 py-4 text-[15px] rr-display font-semibold text-[#1F4738]">{loan.title}</TableCell>
+                          <TableCell className="px-6 py-4 text-sm text-[#4A3F2A]">{loan.author}</TableCell>
+                          <TableCell className="rr-mono px-6 py-4 text-sm text-[#4A3F2A]">{new Date(loan.borrowed_at).toLocaleDateString()}</TableCell>
+                          <TableCell className="rr-mono px-6 py-4 text-sm text-[#4A3F2A]">{new Date(loan.due_date).toLocaleDateString()}</TableCell>
+                          <TableCell className="px-6 py-4">
+                            {loan.returned_at ? (
+                              <span className="rr-stamp rr-mono inline-block text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 text-[#1F4738]">
+                                Returned
+                              </span>
+                            ) : isOverdue ? (
+                              <span className="rr-stamp rr-mono inline-block text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 text-[#A63D2F]">
+                                Overdue
+                              </span>
+                            ) : (
+                              <span className="rr-stamp rr-mono inline-block text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 text-[#8A5A22]">
+                                Active
+                              </span>
+                            )}
+                          </TableCell>
+                          <TableCell className="px-6 py-4 text-right">
+                            {!loan.returned_at && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleReturn(loan.id)}
+                                className="rr-mono border-[#1F4738] text-[#1F4738] hover:bg-[#1F4738] hover:text-[#F6F1E7] rounded-sm text-[11px] uppercase tracking-wide h-8"
+                              >
+                                Return
+                              </Button>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
             )}
           </CardContent>
         </Card>

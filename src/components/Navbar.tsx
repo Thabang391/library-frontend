@@ -1,14 +1,19 @@
 import { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
-import { useTheme } from '@/components/theme-provider';
-import { Moon, Sun } from 'lucide-react';
+import { BookOpen, Menu, X } from 'lucide-react';
+
+const RR_STYLE = `
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600;700&display=swap');
+  .rr-nav-scope { font-family: 'Public Sans', ui-sans-serif, system-ui, sans-serif; }
+  .rr-display { font-family: 'Fraunces', ui-serif, Georgia, serif; }
+  .rr-mono { font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace; }
+`;
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
-  const { theme, setTheme } = useTheme();
 
   const handleLogout = () => {
     logout();
@@ -16,172 +21,104 @@ export default function Navbar() {
     navigate('/');
   };
 
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
-  };
-
-  // Desktop link styles – compact, premium
   const getDesktopLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+    `rr-mono px-3.5 py-1.5 rounded-sm text-[11px] font-semibold uppercase tracking-wide transition-colors duration-150 ${
       isActive
-        ? 'bg-white/20 dark:bg-white/10 text-white shadow-sm backdrop-blur-sm'
-        : 'text-slate-300 hover:text-white hover:bg-white/10 dark:hover:bg-white/5'
+        ? 'bg-[#D9C08F] text-[#1F4738]'
+        : 'text-[#B9CDC1] hover:text-[#F6F1E7] hover:bg-white/5'
     }`;
 
-  // Mobile link styles
   const getMobileLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `block px-4 py-2.5 rounded-lg text-base font-medium transition-colors duration-200 ${
+    `rr-mono block px-4 py-2.5 rounded-sm text-sm font-semibold uppercase tracking-wide transition-colors duration-150 ${
       isActive
-        ? 'bg-white/20 dark:bg-white/10 text-white backdrop-blur-sm'
-        : 'text-slate-300 hover:bg-white/10 hover:text-white dark:hover:bg-white/5'
+        ? 'bg-[#D9C08F] text-[#1F4738]'
+        : 'text-[#B9CDC1] hover:bg-white/5 hover:text-[#F6F1E7]'
     }`;
 
-  // Role-based links for desktop
-  const renderDesktopLinks = () => {
-    if (!user) return null;
-
-    const links = [
-      { to: '/books', label: 'Books' },
-      { to: '/authors', label: 'Authors' },
-      { to: '/loans', label: 'My Loans' },
-      { to: '/lists', label: 'My Lists' },
-      { to: '/profile', label: 'Profile' },
-    ];
-
-    // Admin-only links
-    if (user.role === 'admin') {
-      links.push({ to: '/admin/dashboard', label: 'Dashboard' });
-      links.push({ to: '/admin', label: 'Users' });
-    }
-
-    return links.map((link) => (
-      <NavLink key={link.to} to={link.to} className={getDesktopLinkClass}>
-        {link.label}
-      </NavLink>
-    ));
-  };
-
-  // Mobile menu links
-  const renderMobileLinks = () => {
-    if (!user) return null;
-
-    const links = [
-      { to: '/books', label: 'Books' },
-      { to: '/authors', label: 'Authors' },
-      { to: '/loans', label: 'My Loans' },
-      { to: '/lists', label: 'My Lists' },
-      { to: '/profile', label: 'Profile' },
-    ];
-
-    if (user.role === 'admin') {
-      links.push({ to: '/admin/dashboard', label: 'Dashboard' });
-      links.push({ to: '/admin', label: 'Users' });
-    }
-
-    return links.map((link) => (
-      <NavLink key={link.to} to={link.to} className={getMobileLinkClass} onClick={() => setMobileOpen(false)}>
-        {link.label}
-      </NavLink>
-    ));
-  };
+  const navLinks = user
+    ? [
+        { to: '/books', label: 'Books' },
+        { to: '/authors', label: 'Authors' },
+        { to: '/loans', label: 'My Loans' },
+        { to: '/lists', label: 'My Lists' },
+        { to: '/profile', label: 'Profile' },
+        ...(user.role === 'admin'
+          ? [
+              { to: '/admin/dashboard', label: 'Dashboard' },
+              { to: '/users', label: 'Users' },
+            ]
+          : []),
+      ]
+    : [];
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/10 dark:bg-slate-900/80 backdrop-blur-xl border-b border-white/10 dark:border-slate-700/50 transition-colors duration-300">
+    <nav className="rr-nav-scope sticky top-0 z-50 bg-[#1F4738] relative overflow-hidden">
+      <style>{RR_STYLE}</style>
+      <div className="absolute inset-x-0 bottom-0 h-[3px] bg-gradient-to-r from-transparent via-[#D9C08F] to-transparent" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="flex-shrink-0 flex items-center">
-            <Link to="/" className="flex items-center gap-2" onClick={() => setMobileOpen(false)}>
-              <svg className="w-8 h-8 text-indigo-300 dark:text-indigo-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-              </svg>
-              <span className="text-xl font-extrabold tracking-tight text-white dark:text-slate-100 hidden sm:block">Library</span>
-            </Link>
-          </div>
+          <Link to="/" className="flex items-center gap-2.5 shrink-0" onClick={() => setMobileOpen(false)}>
+            <div className="w-8 h-8 rounded-full border-2 border-[#B08968] flex items-center justify-center bg-[#173328]">
+              <BookOpen className="w-4 h-4 text-[#D9C08F]" strokeWidth={1.75} />
+            </div>
+            <span className="rr-display text-lg font-semibold tracking-tight text-[#F6F1E7] hidden sm:block">The Reading Room</span>
+          </Link>
 
-          {/* Desktop Nav Links (compact) */}
-          <div className="hidden md:flex items-center gap-1.5">
-            {user && renderDesktopLinks()}
+          {/* Desktop Nav Links */}
+          <div className="hidden md:flex items-center gap-1">
+            {user && navLinks.map((link) => (
+              <NavLink key={link.to} to={link.to} className={getDesktopLinkClass}>
+                {link.label}
+              </NavLink>
+            ))}
           </div>
 
           {/* Desktop Auth Controls */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-3">
             {user ? (
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/10 dark:bg-white/5 backdrop-blur-sm rounded-full border border-white/10 dark:border-white/5">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 pl-1.5 pr-3 py-1 bg-white/5 rounded-full border border-[#B08968]/30">
                   {user.avatar_url ? (
-                    <img src={user.avatar_url} alt={user.username} className="w-7 h-7 rounded-full object-cover" />
+                    <img src={user.avatar_url} alt={user.username} className="w-6 h-6 rounded-full object-cover border border-[#D9C08F]/40" />
                   ) : (
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                    <div className="w-6 h-6 rounded-full bg-[#D9C08F] flex items-center justify-center text-[#1F4738] text-[9px] font-bold rr-mono">
                       {user.username?.substring(0, 2).toUpperCase() || user.email?.substring(0, 2).toUpperCase()}
                     </div>
                   )}
-                  <span className="text-sm font-medium text-slate-200 dark:text-slate-300 truncate max-w-[100px]">{user.username || user.email}</span>
-                  <span className="text-[10px] text-slate-400 dark:text-slate-500 bg-white/10 dark:bg-white/5 px-1.5 py-0.5 rounded-full">
+                  <span className="text-sm font-medium text-[#F6F1E7] truncate max-w-[100px]">{user.username || user.email}</span>
+                  <span className="rr-mono text-[9px] uppercase tracking-wide text-[#B9CDC1] bg-white/5 px-1.5 py-0.5 rounded-sm">
                     {user.role}
                   </span>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="px-3 py-1.5 text-sm font-semibold text-white bg-white/10 dark:bg-white/5 backdrop-blur-sm rounded-full border border-white/20 dark:border-white/10 hover:bg-white/20 dark:hover:bg-white/20 transition-all duration-300"
+                  className="rr-mono px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-[#F6F1E7] bg-white/5 rounded-sm border border-[#B08968]/30 hover:bg-white/10 transition-colors duration-200"
                 >
                   Logout
-                </button>
-                <button
-                  onClick={toggleTheme}
-                  className="p-1.5 rounded-full hover:bg-white/10 dark:hover:bg-white/5 transition-colors"
-                  aria-label="Toggle theme"
-                >
-                  {theme === 'dark' ? (
-                    <Sun className="w-5 h-5 text-yellow-400" />
-                  ) : (
-                    <Moon className="w-5 h-5 text-slate-400" />
-                  )}
                 </button>
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <Link to="/login" className="px-4 py-1.5 text-sm font-semibold text-slate-300 hover:text-white dark:hover:text-slate-100 transition-colors duration-300">
+                <Link to="/login" className="rr-mono px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-[#B9CDC1] hover:text-[#F6F1E7] transition-colors duration-300">
                   Login
                 </Link>
-                <Link to="/register" className="px-4 py-1.5 text-sm font-semibold text-white bg-gradient-to-r from-indigo-500 to-violet-600 rounded-full hover:shadow-lg hover:shadow-indigo-500/30 transition-all duration-300">
+                <Link to="/register" className="rr-mono px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-[#1F4738] bg-[#D9C08F] rounded-sm hover:bg-[#E5CE9F] transition-colors duration-300">
                   Register
                 </Link>
-                <button
-                  onClick={toggleTheme}
-                  className="p-1.5 rounded-full hover:bg-white/10 dark:hover:bg-white/5 transition-colors"
-                  aria-label="Toggle theme"
-                >
-                  {theme === 'dark' ? (
-                    <Sun className="w-5 h-5 text-yellow-400" />
-                  ) : (
-                    <Moon className="w-5 h-5 text-slate-400" />
-                  )}
-                </button>
               </div>
             )}
           </div>
 
-          {/* Mobile menu & theme toggle */}
-          <div className="md:hidden flex items-center gap-2">
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-md text-slate-300 hover:text-white hover:bg-white/10 dark:hover:bg-white/5 transition-colors duration-200"
-              aria-label="Toggle theme"
-            >
-              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </button>
+          {/* Mobile menu toggle */}
+          <div className="md:hidden flex items-center">
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="p-2 rounded-md text-slate-300 hover:text-white hover:bg-white/10 dark:hover:bg-white/5 transition-colors duration-200 focus:outline-none"
-              aria-expanded="false"
+              className="p-2 rounded-sm text-[#B9CDC1] hover:text-[#F6F1E7] hover:bg-white/5 transition-colors duration-200 focus:outline-none"
+              aria-expanded={mobileOpen}
             >
               <span className="sr-only">Open main menu</span>
-              {mobileOpen ? (
-                <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-              ) : (
-                <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
-              )}
+              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </div>
@@ -189,38 +126,42 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-white/10 dark:border-slate-700/50 bg-white/10 dark:bg-slate-900/80 backdrop-blur-xl">
+        <div className="md:hidden border-t border-[#B08968]/20 bg-[#173328]">
           <div className="px-2 pt-2 pb-3 space-y-0.5 sm:px-3">
             {user ? (
               <>
-                <div className="flex items-center gap-3 px-4 py-2.5 mb-2 border-b border-white/10 dark:border-white/5">
+                <div className="flex items-center gap-3 px-4 py-2.5 mb-2 border-b border-[#B08968]/20">
                   {user.avatar_url ? (
-                    <img src={user.avatar_url} alt={user.username} className="w-9 h-9 rounded-full object-cover" />
+                    <img src={user.avatar_url} alt={user.username} className="w-9 h-9 rounded-full object-cover border border-[#D9C08F]/40" />
                   ) : (
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-white text-sm font-bold">
+                    <div className="w-9 h-9 rounded-full bg-[#D9C08F] flex items-center justify-center text-[#1F4738] text-sm font-bold rr-mono">
                       {user.username?.substring(0, 2).toUpperCase() || user.email?.substring(0, 2).toUpperCase()}
                     </div>
                   )}
                   <div className="flex flex-col">
-                    <span className="text-xs text-slate-400 dark:text-slate-500">Signed in as</span>
-                    <span className="text-sm font-semibold text-white dark:text-slate-100 truncate">{user.username || user.email}</span>
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500">{user.role}</span>
+                    <span className="rr-mono text-[10px] uppercase tracking-wide text-[#8FA89B]">Signed in as</span>
+                    <span className="text-sm font-semibold text-[#F6F1E7] truncate">{user.username || user.email}</span>
+                    <span className="rr-mono text-[9px] uppercase tracking-wide text-[#B9CDC1]">{user.role}</span>
                   </div>
                 </div>
-                {renderMobileLinks()}
+                {navLinks.map((link) => (
+                  <NavLink key={link.to} to={link.to} className={getMobileLinkClass} onClick={() => setMobileOpen(false)}>
+                    {link.label}
+                  </NavLink>
+                ))}
                 <button
                   onClick={handleLogout}
-                  className="block w-full text-left px-4 py-2.5 rounded-lg text-base font-medium text-red-300 hover:bg-red-500/20 hover:text-red-100 transition-colors duration-200 mt-1"
+                  className="rr-mono block w-full text-left px-4 py-2.5 rounded-sm text-sm font-semibold uppercase tracking-wide text-[#E8A99A] hover:bg-[#A63D2F]/20 hover:text-[#F6DED8] transition-colors duration-200 mt-1"
                 >
                   Logout
                 </button>
               </>
             ) : (
               <div className="space-y-2 pt-2">
-                <Link to="/login" onClick={() => setMobileOpen(false)} className="block w-full text-center px-4 py-2.5 rounded-lg text-base font-semibold text-slate-300 bg-white/10 dark:bg-white/5 hover:bg-white/20 transition-colors duration-200">
+                <Link to="/login" onClick={() => setMobileOpen(false)} className="rr-mono block w-full text-center px-4 py-2.5 rounded-sm text-sm font-semibold uppercase tracking-wide text-[#B9CDC1] bg-white/5 hover:bg-white/10 transition-colors duration-200">
                   Login
                 </Link>
-                <Link to="/register" onClick={() => setMobileOpen(false)} className="block w-full text-center px-4 py-2.5 rounded-lg text-base font-semibold text-white bg-gradient-to-r from-indigo-500 to-violet-600 hover:shadow-lg transition-all duration-200">
+                <Link to="/register" onClick={() => setMobileOpen(false)} className="rr-mono block w-full text-center px-4 py-2.5 rounded-sm text-sm font-semibold uppercase tracking-wide text-[#1F4738] bg-[#D9C08F] hover:bg-[#E5CE9F] transition-colors duration-200">
                   Register
                 </Link>
               </div>

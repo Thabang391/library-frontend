@@ -1,17 +1,11 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-
-/* Futuristic font imports – Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Michroma&family=Space+Grotesk:wght@300..700&display=swap');
-
-/* Keep Geist as a fallback if you like – optional */
-/* @import "@fontsource-variable/geist"; */
+@import "@fontsource-variable/geist";
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Existing variables... */
   --text: #6b6375;
   --text-h: #08060d;
   --bg: #fff;
@@ -24,12 +18,15 @@
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
- /* Font stack – using Michroma for headings, Space Grotesk for body */
-  --sans: 'Space Grotesk', system-ui, 'Segoe UI', Roboto, sans-serif;
+  /* ----------------------------------------------------- */
+  /* FIX: Renamed to --font-sans so Tailwind `font-sans` works */
+  --font-sans: 'Space Grotesk', system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: 'Michroma', system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: 'Space Grotesk', ui-monospace, Consolas, monospace; /* optional */
+  --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+  --serif: 'Instrument Serif', 'Times New Roman', Georgia, serif;
+  /* ----------------------------------------------------- */
 
-  font: 18px/145% var(--sans);
+  font: 18px/145% var(--font-sans);
   letter-spacing: 0.18px;
   color-scheme: light dark;
   color: var(--text);
@@ -43,7 +40,6 @@
     font-size: 16px;
   }
 
-  /* shadcn variables (unchanged) */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -96,31 +92,6 @@
   }
 }
 
-/* ────────────────────────────────────────────── */
-/* Global font enforcement */
-body {
-  margin: 0;
-  font-family: var(--sans);
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--heading);
-  font-weight: 400; /* Michroma only has regular weight */
-  letter-spacing: 0.04em; /* slight spacing for sci-fi feel */
-  text-transform: uppercase; /* optional – gives that archive vibe */
-}
-
-/* Keep body weight flexible */
-p, li, span, div, input, button {
-  font-weight: 400; /* or 300 for lighter */
-}
-
-code, pre, kbd, samp {
-  font-family: var(--mono);
-}
-
-/* ────────────────────────────────────────────── */
-/* Root layout */
 #root {
   max-width: 100%;
   margin: 0 auto;
@@ -132,49 +103,23 @@ code, pre, kbd, samp {
   box-sizing: border-box;
 }
 
-/* ────────────────────────────────────────────── */
-/* STUNNING SCROLLBAR – Glass / Gradient (unchanged) */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+body {
+  margin: 0;
+  /* Updated to use var(--font-sans) to match Tailwind's new variable */
+  font-family: var(--font-sans);
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-  border-radius: 10px;
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--heading);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.1);
-  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+p, li, span, div, input, button {
+  font-weight: 400;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, rgba(255,255,255,0.25), rgba(255,255,255,0.1));
-  border-color: rgba(255,255,255,0.2);
-}
-
-/* Firefox */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.15) transparent;
-}
-
-/* Dark mode adjustments */
-@media (prefers-color-scheme: dark) {
-  ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
-    border-color: rgba(255,255,255,0.05);
-    box-shadow: 0 0 15px rgba(0,0,0,0.5);
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05));
-  }
-  * {
-    scrollbar-color: rgba(255,255,255,0.1) transparent;
-  }
+code, pre, kbd, samp {
+  font-family: var(--mono);
 }

@@ -1,15 +1,38 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/AuthContext';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
+import { UserRound, UploadCloud } from 'lucide-react';
 
 // Ensure your .env variables are prefixed with VITE__
 const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+const RR_STYLE = `
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600;700&display=swap');
+  .rr-scope { font-family: 'Public Sans', ui-sans-serif, system-ui, sans-serif; color: #241C10; }
+  .rr-display { font-family: 'Fraunces', ui-serif, Georgia, serif; }
+  .rr-mono { font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace; }
+  .rr-scope ::-webkit-scrollbar { height: 10px; width: 10px; }
+  .rr-scope ::-webkit-scrollbar-track { background: #EFE6D3; }
+  .rr-scope ::-webkit-scrollbar-thumb { background: #B08968; border-radius: 999px; border: 2px solid #EFE6D3; }
+  .rr-ruled-input {
+    background: transparent; border: none; border-bottom: 1.5px solid #C9BB9C;
+    border-radius: 0; padding-left: 2px; color: #241C10;
+  }
+  .rr-ruled-input::placeholder { color: #A99A7A; }
+  .rr-ruled-input:focus { outline: none; box-shadow: none; border-bottom-color: #B08968; border-bottom-width: 2px; }
+  .rr-ruled-input:disabled { color: #A99A7A; -webkit-text-fill-color: #A99A7A; opacity: 1; }
+  .rr-stamp { transform: rotate(-4deg); border: 2px solid currentColor; border-radius: 3px; box-shadow: 0 0 0 1px currentColor inset; }
+`;
+
+const roleInk: Record<string, string> = {
+  admin: '#A63D2F',
+  librarian: '#1F4738',
+  member: '#8A5A22',
+};
 
 export default function ProfilePage() {
   const { user, updateProfile } = useAuth();
@@ -21,7 +44,7 @@ export default function ProfilePage() {
   const [uploading, setUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [dragActive, setDragActive] = useState<boolean>(false);
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -128,74 +151,75 @@ export default function ProfilePage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
+      <div className="rr-scope min-h-screen bg-[#F6F1E7] flex items-center justify-center">
+        <style>{RR_STYLE}</style>
+        <div className="w-10 h-10 rounded-full border-[3px] border-[#E4D8BE] border-t-[#1F4738] animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900 text-white font-sans antialiased py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+    <div className="relative rr-scope min-h-screen bg-[#F6F1E7] dark:bg-[#0a0a0a] font-[500] antialiased py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+      <div
+          className="absolute inset-0 pointer-events-none opacity-[0.4] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJmIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjc0IiBudW1PY3RhdmVzPSIzIiAvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNmKSIgb3BhY2l0eT0iMC4yIiAvPjwvc3ZnPg==')] bg-repeat"
+        />
+      <style>{RR_STYLE}</style>
       <div className="w-full max-w-3xl">
-        <Card className="border-0 shadow-2xl shadow-indigo-950/50 bg-white/5 backdrop-blur-xl rounded-3xl overflow-hidden">
-          
-          {/* Header Banner */}
-          <div className="h-40 bg-gradient-to-r from-indigo-600/40 to-violet-600/40 w-full relative">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/10 to-transparent"></div>
+        <div className="bg-[#FFFDF8] border border-[#D9C9A3] shadow-[0_24px_48px_-28px_rgba(31,71,56,0.4)] rounded-md overflow-hidden">
+
+          {/* Plaque banner */}
+          <div className="h-32 bg-[#1F4738] w-full relative overflow-hidden">
+            <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-transparent via-[#D9C08F] to-transparent" />
+            <span className="rr-mono absolute top-5 right-6 text-[10px] tracking-[0.2em] uppercase text-[#B9CDC1]">Member Card</span>
           </div>
-          
-          {/* Profile Avatar Section */}
-          <div className="px-8 flex flex-col items-center -mt-20">
-            <div 
-              className={`relative w-40 h-40 rounded-full p-2 bg-slate-900/90 backdrop-blur-xl transition-all duration-300 ${
-                dragActive ? 'ring-4 ring-indigo-400 scale-105' : 'ring-2 ring-white/10'
+
+          {/* Avatar Section */}
+          <div className="px-8 flex flex-col items-center -mt-16">
+            <div
+              className={`relative w-32 h-32 rounded-full p-1.5 bg-[#FFFDF8] transition-all duration-300 ${
+                dragActive ? 'ring-4 ring-[#B08968] scale-105' : 'ring-2 ring-[#D9C9A3]'
               }`}
               onDragEnter={handleDrag}
               onDragOver={handleDrag}
               onDragLeave={handleDrag}
               onDrop={handleDrop}
             >
-              <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-slate-800 relative group cursor-pointer">
+              <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-[#EFE6D3] relative group cursor-pointer border border-[#D9C9A3]">
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="Avatar preview" className="w-full h-full object-cover" />
                 ) : (
-                  <svg className="w-20 h-20 text-slate-600" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
-                  </svg>
+                  <UserRound className="w-14 h-14 text-[#B3A582]" strokeWidth={1.25} />
                 )}
 
                 {/* Hover/Drag Overlay */}
-                <div 
+                <div
                   onClick={() => !uploading && fileInputRef.current?.click()}
-                  className={`absolute inset-0 bg-slate-900/70 flex flex-col items-center justify-center text-center p-2 transition-opacity duration-300 ${
+                  className={`absolute inset-0 bg-[#1F4738]/85 flex flex-col items-center justify-center text-center p-2 transition-opacity duration-300 ${
                     dragActive || uploading ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                   }`}
                 >
                   {uploading ? (
-                    <div className="w-full px-4">
-                      <div className="flex justify-between text-xs text-indigo-300 mb-1 font-medium">
-                        <span>Uploading...</span>
+                    <div className="w-full px-3">
+                      <div className="rr-mono flex justify-between text-[9px] text-[#D9C08F] mb-1 uppercase tracking-wide">
+                        <span>Uploading…</span>
                         <span>{uploadProgress}%</span>
                       </div>
-                      <div className="w-full bg-slate-700/50 rounded-full h-1.5 overflow-hidden">
-                        <div 
-                          className="bg-gradient-to-r from-indigo-400 to-violet-400 h-full rounded-full transition-all duration-300 ease-out" 
+                      <div className="w-full bg-[#F6F1E7]/20 rounded-full h-1.5 overflow-hidden">
+                        <div
+                          className="bg-[#D9C08F] h-full rounded-full transition-all duration-300 ease-out"
                           style={{ width: `${uploadProgress}%` }}
-                        ></div>
+                        />
                       </div>
                     </div>
                   ) : (
-                    <div className="flex flex-col items-center text-slate-200">
-                      <svg className="w-8 h-8 mb-2" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"></path>
-                      </svg>
-                      <span className="text-xs font-semibold">Drop or Click</span>
+                    <div className="flex flex-col items-center text-[#F6F1E7]">
+                      <UploadCloud className="w-6 h-6 mb-1.5" strokeWidth={1.5} />
+                      <span className="rr-mono text-[9px] font-semibold uppercase tracking-wide">Drop or Click</span>
                     </div>
                   )}
                 </div>
               </div>
 
-              {/* Hidden File Input */}
               <input
                 type="file"
                 ref={fileInputRef}
@@ -204,108 +228,105 @@ export default function ProfilePage() {
                 className="hidden"
               />
             </div>
-            
-            <p className="mt-3 text-xs text-slate-400 text-center max-w-xs">
-              Drag & drop an image here, or click to select a file. <br/>
-              <span className="text-slate-500">JPG, PNG, or GIF up to 5MB.</span>
+
+            <p className="rr-mono mt-3 text-[10px] text-[#4A3F2A] text-center max-w-xs uppercase tracking-wide leading-relaxed">
+              Drag &amp; drop an image, or click to select
+              <br />
+              <span className="text-[#4A3F2A]">JPG, PNG, or GIF up to 5MB</span>
             </p>
           </div>
 
           {/* Form Content */}
-          <CardContent className="p-8 pt-6">
+          <div className="p-8 pt-6">
             {error && (
-              <Alert variant="destructive" className="mb-6 bg-red-500/10 border-red-400/30 text-red-200 backdrop-blur-sm rounded-xl">
-                <AlertDescription>{error}</AlertDescription>
+              <Alert variant="destructive" className="mb-6 bg-[#F6DED8] border-[#A63D2F]/40 text-[#7A2C21] rounded-sm">
+                <AlertDescription className="rr-mono text-xs">{error}</AlertDescription>
               </Alert>
             )}
             {success && (
-              <Alert className="mb-6 bg-emerald-500/10 border-emerald-400/30 text-emerald-200 backdrop-blur-sm rounded-xl">
-                <AlertDescription>{success}</AlertDescription>
+              <Alert className="mb-6 bg-[#E3EEE5] border-[#1F4738]/30 text-[#1F4738] rounded-sm">
+                <AlertDescription className="rr-mono text-xs">{success}</AlertDescription>
               </Alert>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6 mt-4">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-300 font-medium">Email Address</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="email" className="rr-mono text-[10px] text-[#4A3F2A] font-semibold tracking-[0.15em] uppercase">Email Address</Label>
                 <Input
                   id="email"
                   type="email"
                   value={user.email}
                   disabled
-                  className="bg-slate-800/50 border-slate-700 text-slate-500 cursor-not-allowed rounded-xl py-3"
+                  className="rr-ruled-input h-10 text-sm cursor-not-allowed"
                 />
-                <p className="text-xs text-slate-500">Your email address cannot be changed.</p>
+                <p className="text-xs text-[#4A3F2A]">Your email address cannot be changed.</p>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="username" className="text-slate-300 font-medium">Username</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="username" className="rr-mono text-[10px] text-[#4A3F2A] font-semibold tracking-[0.15em] uppercase">Username</Label>
                 <Input
                   id="username"
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Your username"
-                  className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:bg-slate-800 focus:ring-2 focus:ring-indigo-400 focus:border-transparent rounded-xl transition-all py-3"
+                  className="rr-ruled-input h-10 text-base"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="avatar" className="text-slate-300 font-medium">Avatar URL (Optional)</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="avatar" className="rr-mono text-[10px] text-[#4A3F2A] font-semibold tracking-[0.15em] uppercase">Avatar URL (Optional)</Label>
                 <Input
                   id="avatar"
                   type="url"
                   value={avatarUrl}
                   onChange={(e) => setAvatarUrl(e.target.value)}
                   placeholder="https://example.com/avatar.jpg"
-                  className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:bg-slate-800 focus:ring-2 focus:ring-indigo-400 focus:border-transparent rounded-xl transition-all py-3"
+                  className="rr-ruled-input h-10 text-sm"
                 />
-                <p className="text-xs text-slate-500">You can also edit the image URL manually if needed.</p>
+                <p className="text-xs text-[#4A3F2A]">You can also edit the image URL manually if needed.</p>
               </div>
 
               {/* Role Display */}
-              <div className="space-y-2">
-                <Label className="text-slate-300 font-medium">Role</Label>
-                <div className="bg-slate-800/50 border border-slate-700 rounded-xl py-3 px-4 flex items-center">
-                  <Badge variant="secondary" className={
-                    user.role === 'admin' ? 'bg-red-500/20 text-red-300' :
-                    user.role === 'librarian' ? 'bg-blue-500/20 text-blue-300' :
-                    'bg-slate-500/20 text-slate-300'
-                  }>
+              <div className="space-y-1.5">
+                <Label className="rr-mono text-[10px] text-[#4A3F2A] font-semibold tracking-[0.15em] uppercase">Role</Label>
+                <div className="bg-[#F6F1E7] border border-[#D9C9A3] rounded-sm py-2.5 px-4 flex items-center">
+                  <span
+                    className="rr-stamp rr-mono inline-block text-[9px] font-bold uppercase tracking-wider px-2.5 py-1"
+                    style={{ color: roleInk[user.role] || '#8A5A22' }}
+                  >
                     {user.role}
-                  </Badge>
+                  </span>
                 </div>
-                <p className="text-xs text-slate-500">Your role determines what actions you can perform.</p>
+                <p className="text-xs text-[#4A3F2A]">Your role determines what actions you can perform.</p>
               </div>
 
               <div className="pt-4 flex flex-col sm:flex-row gap-3 justify-end">
                 <Button
                   type="button"
                   variant="outline"
-                  className="bg-transparent border-slate-600 text-slate-200 hover:bg-slate-800 hover:text-white rounded-xl py-3 px-6 transition-all"
+                  className="rr-mono border-[#D9C9A3] text-[#4A3F2A] hover:bg-[#EFE6D3] rounded-sm text-xs uppercase tracking-wide px-6 py-3 h-auto"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={loading || uploading}
-                  className="bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/30 transition-all duration-300 disabled:opacity-50 py-3 px-8"
+                  className="rr-mono bg-[#1F4738] hover:bg-[#24543F] text-[#F6F1E7] rounded-sm text-xs uppercase tracking-wide px-8 py-3 h-auto disabled:opacity-50"
                 >
                   {loading ? (
-                    <div className="flex items-center justify-center">
-                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                      </svg>
-                      Saving Changes...
-                    </div>
+                    <span className="flex items-center justify-center">
+                      <span className="w-3.5 h-3.5 mr-2 rounded-full border-2 border-[#F6F1E7]/40 border-t-[#F6F1E7] animate-spin" />
+                      Saving Changes…
+                    </span>
                   ) : (
                     'Save Profile'
                   )}
                 </Button>
               </div>
             </form>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

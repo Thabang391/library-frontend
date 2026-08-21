@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
 import API from '@/api';
 import { useAuth } from '@/AuthContext';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { LockKeyhole, BookOpen } from 'lucide-react';
 
 interface User {
   id: number;
@@ -15,6 +14,23 @@ interface User {
   avatar_url?: string;
   created_at: string;
 }
+
+const RR_STYLE = `
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600;700&display=swap');
+  .rr-scope { font-family: 'Public Sans', ui-sans-serif, system-ui, sans-serif; color: #241C10; }
+  .rr-display { font-family: 'Fraunces', ui-serif, Georgia, serif; }
+  .rr-mono { font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace; }
+  .rr-scope ::-webkit-scrollbar { height: 10px; width: 10px; }
+  .rr-scope ::-webkit-scrollbar-track { background: #EFE6D3; }
+  .rr-scope ::-webkit-scrollbar-thumb { background: #B08968; border-radius: 999px; border: 2px solid #EFE6D3; }
+  .rr-stamp { transform: rotate(-4deg); border: 2px solid currentColor; border-radius: 3px; box-shadow: 0 0 0 1px currentColor inset; }
+`;
+
+const roleInk: Record<string, string> = {
+  admin: '#A63D2F',
+  librarian: '#1F4738',
+  member: '#8A5A22',
+};
 
 export default function AdminPage() {
   const { user } = useAuth();
@@ -51,62 +67,94 @@ export default function AdminPage() {
   };
 
   if (user?.role !== 'admin') {
-    return <div className="text-white p-8">You do not have permission to view this page.</div>;
+    return (
+      <div className="rr-scope min-h-screen flex items-center justify-center bg-[#F6F1E7] dark:bg-[#0a0a0a]">
+        <style>{RR_STYLE}</style>
+        <div className="bg-[#FFFDF8] border border-[#D9C9A3] rounded-md text-center px-10 py-12 max-w-sm">
+          <div className="w-14 h-14 rounded-full border-2 border-dashed border-[#D9C9A3] flex items-center justify-center mb-5 mx-auto">
+            <LockKeyhole className="w-6 h-6 text-[#B08968]" strokeWidth={1.5} />
+          </div>
+          <h3 className="rr-display text-xl font-semibold text-[#1F4738]">Access Restricted</h3>
+          <p className="text-[#6B5B3F] text-sm mt-2">You do not have permission to view this page.</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900 text-white font-sans antialiased py-12 px-4 sm:px-6 lg:px-8">
+    <div className="relative rr-scope min-h-screen bg-[#F6F1E7] dark:bg-[#0a0a0a] font-[500] antialiased py-12 px-4 sm:px-6 lg:px-8">
+
+      <div
+          className="absolute inset-0 pointer-events-none opacity-[0.4] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJmIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjc0IiBudW1PY3RhdmVzPSIzIiAvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNmKSIgb3BhY2l0eT0iMC4yIiAvPjwvc3ZnPg==')] bg-repeat"
+        />
+      <style>{RR_STYLE}</style>
+      
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold text-white mb-8">Admin Panel</h1>
+
+        {/* Plaque header */}
+        <div className="rr-display bg-[#1F4738] rounded-t-md relative overflow-hidden mb-8">
+          <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-transparent via-[#D9C08F] to-transparent" />
+          <div className="px-6 md:px-9 py-7">
+            <h1 className="text-3xl md:text-[2.2rem] leading-none font-semibold tracking-tight text-[#F6F1E7]">Admin Panel</h1>
+            <p className="rr-mono text-[11px] tracking-[0.2em] uppercase text-[#B9CDC1] mt-2">Membership Register</p>
+          </div>
+        </div>
 
         {error && (
-          <Alert variant="destructive" className="mb-6 bg-red-500/20 border-red-400/30 text-red-200 backdrop-blur-sm rounded-xl">
-            <AlertDescription>{error}</AlertDescription>
+          <Alert variant="destructive" className="mb-6 bg-[#F6DED8] border-[#A63D2F]/40 text-[#7A2C21] rounded-sm">
+            <AlertDescription className="rr-mono text-xs">{error}</AlertDescription>
           </Alert>
         )}
         {success && (
-          <Alert className="mb-6 bg-green-500/20 border-green-400/30 text-green-200 backdrop-blur-sm rounded-xl">
-            <AlertDescription>{success}</AlertDescription>
+          <Alert className="mb-6 bg-[#E3EEE5] border-[#1F4738]/30 text-[#1F4738] rounded-sm">
+            <AlertDescription className="rr-mono text-xs">{success}</AlertDescription>
           </Alert>
         )}
 
-        <Card className="border-0 shadow-2xl bg-white/5 backdrop-blur-xl rounded-3xl overflow-hidden">
-          <CardHeader className="bg-transparent border-b border-white/10 py-5">
-            <CardTitle className="text-white text-xl font-bold">Manage Users</CardTitle>
-            <CardDescription className="text-slate-300">View and update user roles</CardDescription>
-          </CardHeader>
-          <CardContent className="p-0">
-            {loading ? (
-              <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-400"></div>
+        <div className="bg-[#FFFDF8] border border-[#D9C9A3] shadow-[0_20px_40px_-24px_rgba(31,71,56,0.35)] rounded-md overflow-hidden">
+          <div className="border-b-2 border-[#1F4738] py-5 px-7">
+            <h2 className="rr-display text-[#1F4738] text-xl font-semibold tracking-tight">Manage Users</h2>
+            <p className="rr-mono text-[11px] text-[#4A3F2A] tracking-wide mt-0.5">View and update user roles</p>
+          </div>
+
+          {loading ? (
+            <div className="flex flex-col justify-center items-center h-64 gap-4">
+              <div className="w-10 h-10 rounded-full border-[3px] border-[#E4D8BE] border-t-[#1F4738] animate-spin" />
+              <span className="rr-mono text-[11px] uppercase tracking-[0.2em] text-[#8A7A54]">Retrieving records…</span>
+            </div>
+          ) : users.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-64 text-center px-4">
+              <div className="w-16 h-16 rounded-full border-2 border-dashed border-[#D9C9A3] flex items-center justify-center mb-5">
+                <BookOpen className="w-7 h-7 text-[#B08968]" strokeWidth={1.5} />
               </div>
-            ) : users.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-64 text-center px-4">
-                <p className="text-slate-300">No users found.</p>
-              </div>
-            ) : (
+              <p className="text-[#6B5B3F] text-sm">No users found.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-b border-white/10 hover:bg-white/5">
-                    <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">ID</TableHead>
-                    <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">Username</TableHead>
-                    <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">Email</TableHead>
-                    <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">Role</TableHead>
-                    <TableHead className="py-4 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Actions</TableHead>
+                  <TableRow className="border-b-2 border-[#1F4738] bg-[#1F4738] hover:bg-[#1F4738]">
+                    <TableHead className="rr-mono py-4 px-6 text-[10px] font-semibold text-[#B9CDC1] uppercase tracking-[0.15em]">ID</TableHead>
+                    <TableHead className="rr-mono py-4 px-6 text-[10px] font-semibold text-[#D9C08F] uppercase tracking-[0.15em]">Username</TableHead>
+                    <TableHead className="rr-mono py-4 px-6 text-[10px] font-semibold text-[#B9CDC1] uppercase tracking-[0.15em]">Email</TableHead>
+                    <TableHead className="rr-mono py-4 px-6 text-[10px] font-semibold text-[#B9CDC1] uppercase tracking-[0.15em]">Role</TableHead>
+                    <TableHead className="rr-mono py-4 px-6 text-[10px] font-semibold text-[#B9CDC1] uppercase tracking-[0.15em] text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {users.map((u) => (
-                    <TableRow key={u.id} className="border-b border-white/5 transition-all hover:bg-white/5">
-                      <TableCell className="px-6 py-4 text-sm font-mono text-slate-400">#{u.id}</TableCell>
-                      <TableCell className="px-6 py-4 text-sm font-semibold text-white">{u.username}</TableCell>
-                      <TableCell className="px-6 py-4 text-sm text-slate-300">{u.email}</TableCell>
-                      <TableCell className="px-6 py-4 text-sm">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          u.role === 'admin' ? 'bg-red-500/20 text-red-300' :
-                          u.role === 'librarian' ? 'bg-blue-500/20 text-blue-300' :
-                          'bg-slate-500/20 text-slate-300'
-                        }`}>
+                  {users.map((u, idx) => (
+                    <TableRow
+                      key={u.id}
+                      className={`border-b border-[#E4D8BE] transition-colors hover:bg-[#F1E4C4] ${idx % 2 === 1 ? 'bg-[#F6F1E7]' : 'bg-[#FFFDF8]'}`}
+                    >
+                      <TableCell className="rr-mono px-6 py-4 text-sm text-[#4A3F2A]">#{u.id}</TableCell>
+                      <TableCell className="px-6 py-4 text-[15px] rr-display font-semibold text-[#1F4738]">{u.username}</TableCell>
+                      <TableCell className="px-6 py-4 text-sm text-[#4A3F2A]">{u.email}</TableCell>
+                      <TableCell className="px-6 py-4">
+                        <span
+                          className="rr-stamp rr-mono inline-block text-[9px] font-bold uppercase tracking-wider px-2.5 py-1"
+                          style={{ color: roleInk[u.role] || '#8A5A22' }}
+                        >
                           {u.role}
                         </span>
                       </TableCell>
@@ -115,10 +163,10 @@ export default function AdminPage() {
                           value={u.role}
                           onValueChange={(val) => handleRoleChange(u.id, val)}
                         >
-                          <SelectTrigger className="w-[140px] bg-white/10 border-white/20 text-white focus:ring-indigo-400 rounded-xl">
+                          <SelectTrigger className="rr-mono w-[140px] ml-auto bg-[#F6F1E7] border-[#D9C9A3] text-[#4A3F2A] text-xs rounded-sm h-9">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent className="bg-slate-800 border-white/10 text-white">
+                          <SelectContent className="rr-mono bg-[#F6F1E7] border-[#D9C9A3] text-[#241C10]">
                             <SelectItem value="admin">Admin</SelectItem>
                             <SelectItem value="librarian">Librarian</SelectItem>
                             <SelectItem value="member">Member</SelectItem>
@@ -129,9 +177,9 @@ export default function AdminPage() {
                   ))}
                 </TableBody>
               </Table>
-            )}
-          </CardContent>
-        </Card>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

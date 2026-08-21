@@ -4,7 +4,7 @@ import API from '@/api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Plus, Trash2, Edit, BookOpen } from 'lucide-react';
+import { Plus, Trash2, BookOpen } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -85,143 +85,174 @@ export default function ListsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900 text-white font-sans antialiased pb-16">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-12">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-300 to-violet-300 bg-clip-text text-transparent">My Lists</h1>
-            <p className="text-slate-300 mt-1">Organize your books into custom collections</p>
+    <div className="relative rr-scope min-h-screen bg-[#F6F1E7] dark:bg-[#0a0a0a] font-[500] antialiased pb-16">
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600;700&display=swap');
+        .rr-scope { font-family: 'Public Sans', ui-sans-serif, system-ui, sans-serif; color: #241C10; }
+        .rr-display { font-family: 'Fraunces', ui-serif, Georgia, serif; }
+        .rr-mono { font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace; }
+        .rr-scope ::-webkit-scrollbar { height: 10px; width: 10px; }
+        .rr-scope ::-webkit-scrollbar-track { background: #EFE6D3; }
+        .rr-scope ::-webkit-scrollbar-thumb { background: #B08968; border-radius: 999px; border: 2px solid #EFE6D3; }
+        .rr-card { background: #FFFDF8; border: 1px solid #D9C9A3; border-radius: 6px; }
+        .rr-card-top { border-top: 3px solid #1F4738; }
+        .rr-corner { position: relative; background: #FFFDF8; padding: 3px; border: 1px solid #E4D8BE; }
+      `}</style>
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        <div
+          className="absolute inset-0 pointer-events-none opacity-[0.4] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJmIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjc0IiBudW1PY3RhdmVzPSIzIiAvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNmKSIgb3BhY2l0eT0iMC4yIiAvPjwvc3ZnPg==')] bg-repeat"
+        />
+
+        {/* Plaque header */}
+        <div className="rr-display bg-[#1F4738] rounded-t-md relative overflow-hidden">
+          <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-transparent via-[#D9C08F] to-transparent" />
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 px-6 md:px-9 py-7">
+            <div className="flex items-center gap-4">
+              <div className="w-11 h-11 rounded-full border-2 border-[#B08968] flex items-center justify-center shrink-0 bg-[#173328]">
+                <BookOpen className="w-5 h-5 text-[#D9C08F]" strokeWidth={1.75} />
+              </div>
+              <div>
+                <h1 className="text-3xl md:text-[2.2rem] leading-none font-semibold tracking-tight text-[#F6F1E7]">My Reading Lists</h1>
+                <p className="rr-mono text-[11px] tracking-[0.2em] uppercase text-[#B9CDC1] mt-2">Custom Shelves &amp; Collections</p>
+              </div>
+            </div>
+
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="rr-mono inline-flex items-center justify-center gap-2 bg-[#D9C08F] hover:bg-[#E5CE9F] text-[#1F4738] rounded-sm px-5 py-2.5 h-auto transition-colors font-semibold text-xs uppercase tracking-wider shadow-sm">
+                  <Plus className="w-4 h-4" strokeWidth={2.5} />
+                  New Shelf
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="rr-scope bg-[#FFFDF8] border-[#D9C9A3] text-[#241C10] rounded-md">
+                <DialogHeader>
+                  <DialogTitle className="rr-display text-[#1F4738] text-xl font-semibold">Create a New Shelf</DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleCreateList} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="list-name" className="rr-mono text-[10px] text-[#8A7A54] font-semibold tracking-[0.15em] uppercase">Shelf Name *</Label>
+                    <Input
+                      id="list-name"
+                      value={newName}
+                      onChange={(e) => setNewName(e.target.value)}
+                      placeholder="e.g., Books to Read"
+                      className="bg-[#F6F1E7] border-[#D9C9A3] text-[#241C10] placeholder:text-[#A99A7A] focus-visible:ring-[#B08968] rounded-sm"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="list-desc" className="rr-mono text-[10px] text-[#8A7A54] font-semibold tracking-[0.15em] uppercase">Description (optional)</Label>
+                    <Textarea
+                      id="list-desc"
+                      value={newDescription}
+                      onChange={(e) => setNewDescription(e.target.value)}
+                      placeholder="What's this list about?"
+                      className="bg-[#F6F1E7] border-[#D9C9A3] text-[#241C10] placeholder:text-[#A99A7A] focus-visible:ring-[#B08968] rounded-sm"
+                      rows={3}
+                    />
+                  </div>
+                  {error && (
+                    <Alert variant="destructive" className="bg-[#F6DED8] border-[#A63D2F]/40 text-[#7A2C21] rounded-sm">
+                      <AlertDescription className="rr-mono text-xs">{error}</AlertDescription>
+                    </Alert>
+                  )}
+                  {success && (
+                    <Alert className="bg-[#E3EEE5] border-[#1F4738]/30 text-[#1F4738] rounded-sm">
+                      <AlertDescription className="rr-mono text-xs">{success}</AlertDescription>
+                    </Alert>
+                  )}
+                  <div className="flex justify-end gap-3 pt-1">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setIsDialogOpen(false)}
+                      className="rr-mono border-[#D9C9A3] text-[#4A3F2A] hover:bg-[#EFE6D3] rounded-sm text-xs uppercase tracking-wide"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="rr-mono bg-[#1F4738] hover:bg-[#24543F] text-[#F6F1E7] rounded-sm px-6 text-xs uppercase tracking-wide"
+                    >
+                      {isSubmitting ? 'Creating…' : 'Create Shelf'}
+                    </Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white shadow-lg shadow-indigo-500/20 rounded-xl px-6 py-3 transition-all duration-300">
-                <Plus className="w-5 h-5 mr-2" />
-                Create New List
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-slate-800 border-white/10 text-white">
-              <DialogHeader>
-                <DialogTitle className="text-white">Create New List</DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleCreateList} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="list-name" className="text-slate-300">List Name *</Label>
-                  <Input
-                    id="list-name"
-                    value={newName}
-                    onChange={(e) => setNewName(e.target.value)}
-                    placeholder="e.g., Books to Read"
-                    className="bg-slate-900/50 border-white/20 text-white placeholder:text-slate-500 focus:ring-indigo-400 rounded-xl"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="list-desc" className="text-slate-300">Description (optional)</Label>
-                  <Textarea
-                    id="list-desc"
-                    value={newDescription}
-                    onChange={(e) => setNewDescription(e.target.value)}
-                    placeholder="What's this list about?"
-                    className="bg-slate-900/50 border-white/20 text-white placeholder:text-slate-500 focus:ring-indigo-400 rounded-xl"
-                    rows={3}
-                  />
-                </div>
-                {error && (
-                  <Alert variant="destructive" className="bg-red-500/20 border-red-400/30 text-red-200 rounded-xl">
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                )}
-                {success && (
-                  <Alert className="bg-green-500/20 border-green-400/30 text-green-200 rounded-xl">
-                    <AlertDescription>{success}</AlertDescription>
-                  </Alert>
-                )}
-                <div className="flex justify-end gap-3">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsDialogOpen(false)}
-                    className="border-white/20 text-slate-200 hover:bg-white/10 rounded-xl"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white rounded-xl px-6 py-2"
-                  >
-                    {isSubmitting ? 'Creating...' : 'Create'}
-                  </Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
         </div>
+        <div className="h-8 bg-[#EFE6D3] border-x border-b border-[#D9C9A3] rounded-b-md mb-8" />
 
         {error && (
-          <Alert variant="destructive" className="mb-6 bg-red-500/20 border-red-400/30 text-red-200 backdrop-blur-sm rounded-xl">
-            <AlertDescription>{error}</AlertDescription>
+          <Alert variant="destructive" className="mb-6 bg-[#F6DED8] border-[#A63D2F]/40 text-[#7A2C21] rounded-sm">
+            <AlertDescription className="rr-mono text-xs">{error}</AlertDescription>
           </Alert>
         )}
         {success && (
-          <Alert className="mb-6 bg-green-500/20 border-green-400/30 text-green-200 backdrop-blur-sm rounded-xl">
-            <AlertDescription>{success}</AlertDescription>
+          <Alert className="mb-6 bg-[#E3EEE5] border-[#1F4738]/30 text-[#1F4738] rounded-sm">
+            <AlertDescription className="rr-mono text-xs">{success}</AlertDescription>
           </Alert>
         )}
 
         {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-400"></div>
+          <div className="flex flex-col justify-center items-center h-64 gap-4">
+            <div className="w-10 h-10 rounded-full border-[3px] border-[#E4D8BE] border-t-[#1F4738] animate-spin" />
+            <span className="rr-mono text-[11px] uppercase tracking-[0.2em] text-[#8A7A54]">Retrieving shelves…</span>
           </div>
         ) : lists.length === 0 ? (
-          <Card className="border-0 shadow-2xl bg-white/5 backdrop-blur-xl rounded-3xl overflow-hidden p-12 text-center">
-            <svg className="w-16 h-16 text-slate-500 mx-auto mb-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
-            <h3 className="text-xl font-semibold text-white">No lists yet</h3>
-            <p className="text-slate-300 text-sm mt-1">Create your first list to start organizing your books.</p>
+          <div className="rr-card text-center p-14">
+            <div className="w-16 h-16 rounded-full border-2 border-dashed border-[#D9C9A3] flex items-center justify-center mb-5 mx-auto">
+              <BookOpen className="w-7 h-7 text-[#B08968]" strokeWidth={1.5} />
+            </div>
+            <h3 className="rr-display text-2xl font-semibold text-[#1F4738]">No shelves yet</h3>
+            <p className="text-[#6B5B3F] text-sm mt-2">Create your first shelf to start organizing your books.</p>
             <Button
               variant="outline"
               onClick={() => setIsDialogOpen(true)}
-              className="mt-4 border-white/20 text-slate-200 hover:bg-white/10 rounded-xl"
+              className="rr-mono mt-5 border-[#1F4738] text-[#1F4738] hover:bg-[#1F4738] hover:text-[#F6F1E7] rounded-sm text-xs uppercase tracking-wide"
             >
-              <Plus className="w-4 h-4 mr-2" />
-              Create List
+              <Plus className="w-3.5 h-3.5 mr-2" />
+              Create Shelf
             </Button>
-          </Card>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {lists.map((list) => (
-              <Card key={list.id} className="border-0 shadow-2xl bg-white/5 backdrop-blur-xl rounded-3xl overflow-hidden hover:shadow-indigo-500/10 transition-all">
-                <CardHeader className="border-b border-white/10 py-4">
-                  <CardTitle className="text-white text-lg font-bold truncate">{list.name}</CardTitle>
+              <div key={list.id} className="rr-card rr-card-top overflow-hidden shadow-[0_16px_32px_-24px_rgba(31,71,56,0.35)] hover:shadow-[0_18px_36px_-20px_rgba(31,71,56,0.4)] transition-shadow">
+                <div className="border-b border-dashed border-[#E4D8BE] py-4 px-5">
+                  <h3 className="rr-display text-[#1F4738] text-lg font-semibold truncate">{list.name}</h3>
                   {list.description && (
-                    <CardDescription className="text-slate-300 text-sm line-clamp-2">{list.description}</CardDescription>
+                    <p className="text-[#6B5B3F] text-sm mt-1 line-clamp-2">{list.description}</p>
                   )}
-                </CardHeader>
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between text-sm text-slate-400 mb-4">
-                    <span className="flex items-center">
-                      <BookOpen className="w-4 h-4 mr-1" />
-                      {list.book_count} books
+                </div>
+                <div className="p-5">
+                  <div className="rr-mono flex items-center justify-between text-[11px] text-[#8A7A54] dark:text-[#4A3F2A] mb-5 uppercase tracking-wide">
+                    <span className="flex items-center gap-1.5">
+                      <BookOpen className="w-3.5 h-3.5" />
+                      {list.book_count} volume{list.book_count !== 1 ? 's' : ''}
                     </span>
-                    <span>Created {new Date(list.created_at).toLocaleDateString()}</span>
+                    <span>{new Date(list.created_at).toLocaleDateString()}</span>
                   </div>
                   <div className="flex gap-2">
                     <Link to={`/lists/${list.id}`} className="flex-1">
-                      <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl">
-                        View
+                      <Button className="rr-mono w-full bg-[#1F4738] hover:bg-[#24543F] text-[#F6F1E7] rounded-sm text-xs uppercase tracking-wide">
+                        View Shelf
                       </Button>
                     </Link>
                     <Button
                       variant="outline"
                       size="icon"
                       onClick={() => handleDeleteList(list.id)}
-                      className="border-white/20 text-red-400 hover:bg-red-500/20 hover:text-red-300 rounded-xl"
+                      className="border-[#D9C9A3] text-[#A63D2F] hover:bg-[#F6DED8] hover:text-[#7A2C21] rounded-sm"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         )}
